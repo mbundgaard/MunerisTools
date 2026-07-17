@@ -1,0 +1,4 @@
+# build artifacts / binaries never belong in this repo
+*.exe
+*.zip
+*.msi
