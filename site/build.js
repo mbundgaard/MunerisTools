@@ -40,6 +40,9 @@ export function docPages(dir) {
     .map(d => ({ title: d.title, html: `<div class="md">${decorate(marked.parse(d.body))}</div>` }));
 }
 
+// Parse a JSON file, tolerating a leading UTF-8 BOM (PowerShell's Set-Content -Encoding UTF8 adds one).
+const readJSON = p => JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+
 function main() {
   // Discover tools: every folder under tools/ that has a tool.json.
   const slugs = readdirSync(TOOLS_DIR).filter(s => existsSync(join(TOOLS_DIR, s, 'tool.json')));
@@ -49,9 +52,9 @@ function main() {
 
   const tools = slugs.map(slug => {
     const dir = join(TOOLS_DIR, slug);
-    const tj = JSON.parse(readFileSync(join(dir, 'tool.json'), 'utf8'));   // frame (human-authored)
+    const tj = readJSON(join(dir, 'tool.json'));                           // frame (human-authored)
     const relPath = join(dir, 'release.json');                             // latest release (pipeline-written)
-    const rel = existsSync(relPath) ? JSON.parse(readFileSync(relPath, 'utf8')) : null;
+    const rel = existsSync(relPath) ? readJSON(relPath) : null;
     const status = rel ? 'stable' : 'soon';                                // no release.json → Coming soon
 
     // App-facing manifest (auto-update reads latest + download url).

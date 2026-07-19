@@ -1,7 +1,8 @@
 name: Build & deploy Pages
 on:
-  release:
-    types: [published]
+  # The publish pipeline commits release.json under site/**, which triggers this build — so the
+  # site always reflects the latest release without a separate release trigger (which only caused
+  # a duplicate run that raced/cancelled the push build).
   push:
     branches: [main]
     paths:
