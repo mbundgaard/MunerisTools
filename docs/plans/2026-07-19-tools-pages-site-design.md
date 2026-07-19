@@ -115,6 +115,27 @@ The generated pages must work well on phones as well as desktop:
   offered; current/newer → none).
 - Confirm the Pages deploy renders correctly on desktop and a narrow (mobile) viewport.
 
+## Release automation (Azure DevOps → GitHub)
+
+The source repo (Azure DevOps) is the sole orchestrator; the generator stays in MunerisTools but
+every content input it consumes originates in the source repo and is pushed over.
+
+On **push to `main`** in the source repo, `azure-pipelines.yml`:
+1. **Bump-gate** — reads the csproj build number `<n>`; if `ip-printer/v<n>` already exists on GitHub,
+   exits (no bump = no release).
+2. Builds the `.exe` (`build.ps1`; hermetic via the `Microsoft.NETFramework.ReferenceAssemblies`
+   build-only package).
+3. **Pushes `docs\`** (README/CHANGELOG/images) into `MunerisTools/tools/ip-printer/` — *before* the
+   release, so the rebuild sees fresh docs.
+4. **Creates the `ip-printer/v<n>` release** (binary + notes from the newest changelog section).
+
+The docs push and the release both trigger the Pages Action (`on: push [tools/**, site/**]` and
+`on: release published`), which regenerates `version.json` + HTML and deploys. Auth is a single
+GitHub PAT (`repo` scope covers both pushing commits and creating releases), stored as the pipeline
+secret `GH_PAT`.
+
+Manual fallback: the same scripts (`publish-docs.ps1`, `publish-release.ps1`) run locally.
+
 ## Out of scope (v1)
 
 - Custom domain, download analytics, code signing, and any server-side component.
