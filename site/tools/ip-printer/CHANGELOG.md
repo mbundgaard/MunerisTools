@@ -3,249 +3,78 @@ title: Changelog
 order: 100
 ---
 
-## v28 — 2026-07-19
+## v28 — 2026-07-14
+- fix: Double-height text now scales width and height independently — a double-height-only line is no longer drawn double-width, so a full 40-character line no longer wraps onto two rows.
 
-### v2026.7.14.28: 2026-07-14
-*Latest commit: `aa0a713`*
+## v27 — 2026-07-05
+- add: Local HTTP API (port 9101) for AI-driven receipt design — self-describing `GET /`, `GET /latest[.txt|.hex]`, `POST /clear`, and a "Copy AI prompt" menu item.
+- add: Copy-as-raw-hex-bytes button per receipt.
+- add: Default code page setting, plus expanded `ESC t` support (Cyrillic 866/1251/855, Windows Central-European/Greek/Turkish).
+- chg: Redesigned Settings dialog with left navigation and a fixed size.
+- fix: Full 40-character lines no longer wrap their last characters.
 
-**Fixes**
-- Double-height text (`GS !` / `ESC !`) now scales width and height independently — a double-height-only line is no longer drawn double-width, so a full 40-character line no longer wraps onto two rows. Command parsing was already correct; only the rendering was fixed.
+## v21 — 2026-07-01
+- chg: Raster images render at 203 DPI (thermal-head), so a full-width raster matches the 40-column text width.
 
----
+## v20 — 2026-07-01
+- add: Full ESC/POS on-screen rendering — bold, alignment, size, underline, reverse, and code-page switches.
+- add: Inline raster bitmaps and stored logos.
+- add: QR codes via a hand-rolled ISO/IEC 18004 encoder.
 
-## v27 — 2026-07-19
+## v19 — 2026-06-17
+- fix: Receipt copy buttons no longer become unclickable (a hover hit-test gap).
 
-Cumulative since v2026.7.3.22.
+## v18 — 2026-05-31
+- add: "Copy share link" menu item.
 
-### Local HTTP API (port 9101) for AI-driven receipt design
-- `GET /` — self-describing guide (endpoints, printer instances, the send/fetch loop).
-- `GET /latest?printer=N` — PNG of an instance's newest receipt (paper only).
-- `GET /latest.txt?printer=N` — decoded text; `GET /latest.hex?printer=N` — exact received bytes as space-separated hex.
-- `POST /clear` (live) and `POST /printers/add|rename|remove` (save + restart).
-- **Copy AI prompt** menu item seeds an agent with the API URL.
+## v17 — 2026-05-31
+- add: Receipt arrival animation.
+- add: Per-printer heartbeat dot that pulses on each accepted connection.
 
-### Receipts
-- New **copy as raw hex bytes** button (`{ }`) per receipt — exact received stream, space-separated hex.
-- Fix: full 40-character lines no longer wrap their last couple of characters.
+## v16 — 2026-05-30
+- chg: Clear-all now also deselects the sidebar.
 
-### Code pages
-- New **Default code page** setting (used when print data carries no `ESC t`; an `ESC t` overrides it).
-- Expanded `ESC t` support incl. the SRP-S300 Cyrillic trio (866/1251/855) and the Windows Central-European/Greek/Turkish pages (1250/1253/1254).
-- Overlap-free table; the two ambiguous numbers (33/34, where Epson and BIXOLON disagree) are intentionally unmapped. Table documented in CLAUDE.md.
+## v15 — 2026-05-30
+- chg: Quieter unviewed-receipt indicator — the count badge is enough.
 
-### Settings dialog
-- Redesigned with a left navigation (Printers / General) and a fixed-size window that no longer grows when printers are added.
+## v14 — 2026-05-30
+- fix: Clear-all now resets the unviewed-count badges too.
 
-### Other
-- Default window size tuned; dark-themed dropdown.
+## v13 — 2026-05-30
+- chg: Dropped the redundant Close button from the About dialog.
 
----
+## v12 — 2026-05-30
+- chg: Replaced the remaining native message boxes with the dark-themed dialog.
 
-## v22 — 2026-07-19
+## v11 — 2026-05-30
+- add: Support email shown in the About dialog.
+- chg: Sidebar update label simplified to "Update ready!".
 
-Fix: full 40-character lines no longer wrap their last ~2 characters.
+## v9 — 2026-05-30
+- add: Startup-time auto-apply — a staged update is swapped in on next launch, before the port is bound.
 
-A hosted RichTextBox forcibly rewrites its FlowDocument's PagePadding to
-{5,0,5,0} on measure, insetting the text region by 10px. The receipt width now
-adds that host padding back so the text area itself equals a full 40-char line.
+## v8 — 2026-05-30
+- chg: Release asset always named `MunerisIpPrinter.exe` (stable filename) so shortcuts survive updates.
 
----
+## v6 — 2026-05-30
+- add: "Check for updates" menu item.
+- chg: Settings moved to `%LOCALAPPDATA%` (auto-migrates on first run).
 
-## v21 — 2026-07-19
+## v5 — 2026-05-30
+- chg: Switched to CalVer versioning (`yyyy.M.d.build`).
 
-Raster images (icons, separator rules, stored logos, QR codes) now render at 203 DPI (typical Epson thermal head) instead of 96 DPI. A full-width raster settles at the same on-screen size as the 40-column text paper, instead of about 2x wider.
+## v4 — 2026-05-30
+- add: Periodic update poll every 4 hours.
 
----
+## v3 — 2026-05-30
+- chg: One-click update apply (removed the redundant confirm).
 
-## v20 — 2026-07-19
+## v2 — 2026-05-30
+- fix: No more Windows Firewall prompt — binds one socket per `127.0.0.X` instead of `0.0.0.0`.
+- fix: "Port already in use" on restart, via a bind retry.
 
-Reworked the renderer to honour everything a real POS print stream emits, so a Popeyes assembly ticket (or anything using the same command vocabulary) looks like the paper output rather than a flat text dump.`n`n**Text formatting** — bold, alignment (left/centre/right), size (`GS !` magnification), underline, reverse (`GS B`), codepage switches (`ESC t`), and `ESC @` init all reflected in the on-screen output.`n`n**Inline raster bitmaps** — `GS v 0` payloads decode to Gray8 bitmaps and embed at the paragraph's current alignment. Fixes order-type icons and full-width separator rules.`n`n**Stored logos** — `GS *` upload + `GS /` reference still resolve against the per-printer logo slot; they just live inline in the receipt now instead of on a separate row.`n`n**QR codes** — hand-rolled ISO/IEC 18004 encoder (Reed-Solomon, all versions 1-40, byte mode, ECC L/M/Q/H). `GS ( k` command chains render to a scannable QR bitmap in-line.`n`n**Wrappers** — `DLE SI/SO` transparent-print markers and `FS &/.` multi-byte toggles walked cleanly so the parser never desyncs.`n`nCopy-as-text still uses the flat extractor so pasted receipts are pure ASCII regardless of on-screen formatting.
+## v1 — 2026-05-30
+- add: In-app auto-update — background download plus one-click apply.
 
----
-
-## v19 — 2026-07-19
-
-Fix receipt copy buttons being unclickable: the hover-revealed copy strip vanished when moving the cursor from the paper toward the buttons (WPF hit-test gap on the transparent wrapper). The wrapper is now fully hit-testable so the hover stays stable.
-
----
-
-## v18 — 2026-07-19
-
-Hamburger menu gains a **Copy share link** entry that puts the repo URL on the clipboard. Quick demo flow: open menu, click Copy share link, paste into Teams/Meet/Slack chat.
-
----
-
-## v17 — 2026-07-19
-
-Two small bits of UI life:
-
-- **Receipt arrival animation** — new receipts slide in from above with a quick fade, instead of just appearing.
-- **Heartbeat dot per printer** — small accent-blue dot next to each printer name pulses on every accepted TCP connection. Lets you see `the POS is talking to printer 2 but no receipts yet` at a glance, instead of staring at an apparently-idle sidebar.
-
----
-
-## v16 — 2026-07-19
-
-``Clear all receipts`` now also drops the sidebar selection so the side comes up empty after a wipe instead of leaving the previously-active row highlighted.
-
----
-
-## v15 — 2026-07-19
-
-Stopped re-styling the printer name (bold + brighter) when receipts arrive on a non-selected printer. The count badge is enough signal on its own.
-
----
-
-## v14 — 2026-07-19
-
-Fix: ``Clear all receipts`` left the unviewed-count badges on the sidebar pinned to their old values. Now resets them along with the receipts themselves.
-
----
-
-## v13 — 2026-07-19
-
-Removed the redundant Close button from the About dialog. Title-bar X and Esc both close it.
-
----
-
-## v12 — 2026-07-19
-
-Replaced the remaining native Windows MessageBox calls with the dark-themed ConfirmDialog: Clear-all confirm, Settings validation, save-failure error, and port-in-use error.
-
----
-
-## v11 — 2026-07-19
-
-Two small touches:
-- Sidebar update label is now just **Update ready!** (the '· restart' was redundant once startup-time auto-apply landed).
-- About dialog shows a contact line — *Comments and suggestions: support@muneris.dk*.
-
----
-
-## v9 — 2026-07-19
-
-If a previous session downloaded a new version, the next launch detects the staged file in `%TEMP%` and swaps it in **before binding the TCP port** — no click needed. The existing `Update ready · restart` link still works for immediate mid-session upgrades.
-
----
-
-## v8 — 2026-07-19
-
-Release asset is now always `MunerisIpPrinter.exe` (no version in the filename). Shortcuts pointing at the file keep working across upgrades — auto-update preserves whatever name you have it under locally. The version stays embedded in the assembly and is visible in About / sidebar.
-
----
-
-## v6 — 2026-07-19
-
-- Hamburger menu adds **Check for updates** that triggers the same flow as the periodic poll and reports the no-update case.
-- Restart prompt after saving settings is now a dark-themed dialog instead of the native Windows MessageBox.
-- `MunerisIpPrinter.bin` (settings + logos + history) moved to `%LOCALAPPDATA%\MunerisIpPrinter\` so the .exe folder is a single portable file. Existing installs migrate automatically on first run.
-
----
-
-## v5 — 2026-07-19
-
-Switched the versioning scheme from semver to date-based (`yyyy.M.d.build`). Tags, asset filenames, and the in-app version label all use the new format. Existing 1.x installs will pick this up automatically since 1.0.4 < 2026.5.30.5.
-
----
-
-## v4 — 2026-07-19
-
-Re-checks GitHub for new releases every 4 hours while the app is running. Previously you had to restart the app to discover a new version; now a long-running session picks them up too.
-
----
-
-## v3 — 2026-07-19
-
-Removed the redundant `Restart now?` confirm dialog when applying an update. The sidebar link already reads `Update ready · restart`; clicking it now installs and restarts immediately.
-
----
-
-## v2 — 2026-07-19
-
-## Muneris IP Printer v1.0.2
-
-### What's fixed
-
-- **No more Windows Firewall prompt.** Previously the app bound to
-  `0.0.0.0:9100` which Windows treats as a network server even though
-  every connection actually comes from the loopback adapter. v1.0.2
-  binds one socket per configured `127.0.0.X:9100` address instead,
-  so the firewall never sees us.
-- **"Port already in use" on restart.** The settings-save restart and
-  the auto-update restart now retry the listener bind for ~4 seconds
-  if the prior instance is still releasing the socket. Race window
-  closed.
-
-### Install
-
-Existing v1.0.1 (or v1.0.0) installations will pick this up
-automatically — wait for the sidebar to flip to **Update ready · restart**
-and click. Manual download below if you'd rather.
-
----
-
-## v1 — 2026-07-19
-
-## Muneris IP Printer v1.0.1
-
-Adds the in-app auto-update flow.
-
-### What's new
-
-- **Background download.** When v1.0.0 (or later) finds a newer release,
-  it streams the matching `.exe` asset to `%TEMP%` while you keep working.
-- **Sidebar nudge.** The accent-blue version link in the sidebar bottom
-  flips to "Update ready · restart" once the download lands.
-- **One-click apply.** Click the link, confirm, the app shuts down,
-  a small helper swaps in the new `.exe`, and the new build relaunches —
-  no installer, no admin prompt.
-
-### Install
-
-Download **`MunerisIpPrinter-1.0.1.exe`** below. Drop it next to your
-existing copy (or anywhere) and run it. Or, if you're already on v1.0.0,
-just wait for the sidebar link to flip and click it.
-
-### License
-
-MIT — see [LICENSE](https://github.com/mbundgaard/MunerisIpPrinter/blob/main/LICENSE).
-
----
-
-## v0 — 2026-07-19
-
-## Muneris IP Printer v1.0.0
-
-First public release.
-
-A small Windows utility that stands in for up to fifteen ESC/POS receipt
-printers on loopback IPs. Point your POS at `127.0.0.1:9100`,
-`127.0.0.2:9100`, … and every receipt that would have hit a kitchen
-printer shows up on screen instead — handy for verifying Simphony
-configurations without wiring up real hardware.
-
-### Install
-
-Download **`MunerisIpPrinter-1.0.0.exe`** below and run it. No installer.
-No prerequisites — uses the .NET Framework 4.6.2 runtime that's already
-on every Windows 10 / Server 2016 (and newer) box.
-
-The .exe is ~960 KB and self-contained, so it's happy living in a
-Dropbox / OneDrive / toolkit folder and being copied into test
-environments on the fly.
-
-### Highlights
-
-- Up to 15 logical printers on loopback IPs, all configured from
-  the in-app Settings dialog
-- Live stack of receipts per printer, newest on top, with hover-revealed
-  copy-as-text / copy-as-image buttons
-- Per-printer rename inline; persisted across restarts
-- New-receipt badge on the sidebar shows printer activity at a glance
-- Resizable sidebar; window position and sidebar width are remembered
-- `GET http://localhost:9101/screenshot` returns a PNG of the current
-  window — useful for embedding in dashboards or automation
-
-### License
-
-MIT — see [LICENSE](https://github.com/mbundgaard/MunerisIpPrinter/blob/main/LICENSE).
+## v0 — 2026-05-30
+- add: First release — up to 15 loopback printers, live receipt stack, copy as text/image.

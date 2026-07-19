@@ -23,12 +23,16 @@ function parseDoc(raw) {
   return { title, order, body };
 }
 
+// Turn "- add: …" / "- fix: …" / "- chg: …" list items into little coloured change chips.
+const CHIPS = html => html.replace(/<li>(add|fix|chg):\s*/gi,
+  (_, t) => `<li><span class="chip ${t.toLowerCase()}">${t.toLowerCase()}</span> `);
+
 // One sub-page (tab) per markdown file in the tool folder, sorted by order then title.
 export function docPages(dir) {
   return readdirSync(dir).filter(f => f.endsWith('.md'))
     .map(f => parseDoc(readFileSync(join(dir, f), 'utf8')))
     .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
-    .map(d => ({ title: d.title, html: `<div class="md">${marked.parse(d.body)}</div>` }));
+    .map(d => ({ title: d.title, html: `<div class="md">${CHIPS(marked.parse(d.body))}</div>` }));
 }
 
 function main() {
