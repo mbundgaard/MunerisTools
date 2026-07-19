@@ -5,8 +5,9 @@ export function buildManifest(releases, tool) {
   for (const r of releases || []) {
     const tag = r.tag_name || '';
     if (!tag.startsWith(prefix)) continue;
-    const build = Number.parseInt(tag.slice(prefix.length), 10);
-    if (!Number.isInteger(build)) continue;
+    const numeric = tag.slice(prefix.length);
+    if (!/^\d+$/.test(numeric)) continue;   // exactly the build counter, no trailing garbage
+    const build = Number.parseInt(numeric, 10);
     const asset = (r.assets || []).find(a => a.name === tool.asset);
     items.push({
       build,

@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync, existsSync, readdirSync, mkdirSync, writeFileSync, cpSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, mkdirSync, writeFileSync, cpSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { buildManifest } from './lib/manifest.js';
 import { renderToolPage, renderIndex } from './lib/render.js';
@@ -14,7 +14,7 @@ const REPO = process.env.SITE_REPO || 'mbundgaard/MunerisTools';
 export function listImages(slug) {
   const dir = join(REPO_ROOT, 'tools', slug, 'images');
   if (!existsSync(dir)) return [];
-  return readdirSync(dir).filter(f => /\.(png|jpe?g|webp|svg)$/i.test(f)).map(f => `images/${f}`);
+  return readdirSync(dir).filter(f => /\.(png|jpe?g|webp|svg)$/i.test(f)).sort().map(f => `images/${f}`);
 }
 
 function fetchReleases() {
@@ -27,6 +27,7 @@ function main() {
   const tools = JSON.parse(readFileSync(join(ROOT, 'tools.json'), 'utf8'));
   const releases = fetchReleases();
   const manifests = {};
+  rmSync(OUT, { recursive: true, force: true });   // deterministic: no stale files carry over
   mkdirSync(OUT, { recursive: true });
   for (const tool of tools) {
     const manifest = buildManifest(releases, tool);
@@ -48,4 +49,5 @@ function main() {
   console.log(`Built ${tools.length} tool page(s) to ${OUT}`);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) main();
+// Separator/drive-case-safe entry check (Windows-robust) instead of raw path string equality.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

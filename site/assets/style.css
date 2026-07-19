@@ -20,5 +20,6 @@ h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); margin: .2em 0; }
 .dl::before { content:"⬇ "; }
 small { color:var(--muted); font-weight:400; }
 pre { overflow-x:auto; background:rgba(127,127,127,.12); padding:12px; border-radius:8px; }
+table { display:block; overflow-x:auto; max-width:100%; border-collapse:collapse; }
 .back, .card:hover h2 { color:var(--accent); }
 @media (min-width: 620px) { .cards { grid-template-columns:1fr 1fr; } }

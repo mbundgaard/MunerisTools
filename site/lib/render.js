@@ -1,6 +1,9 @@
 import { marked } from 'marked';
 import { page } from './layout.js';
 
+// NOTE: tool fields, release metadata, and marked-rendered notes are injected into HTML
+// unescaped. This is intentional and safe: every input is maintainer-controlled (tools.json
+// and our own GitHub release notes). Do NOT wire third-party content in here without sanitizing.
 export function renderToolPage(tool, manifest, docs = {}) {
   const latest = manifest.releases[0];
   const dl = latest && latest.url
