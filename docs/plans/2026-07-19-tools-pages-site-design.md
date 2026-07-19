@@ -16,6 +16,11 @@ Pages** (in the `MunerisTools` repo) that is generated from that data. A GitHub 
 the site and a per-tool `version.json` manifest on each release. The desktop app's auto-update reads
 the manifest instead of scraping the release body.
 
+**Scale:** the catalog targets **5–8 tools**. Each tool page must offer documentation, a changelog,
+and **archive download** — every past version downloadable, not just the latest. The `version.json`
+already lists every release with its asset `url`, so the tool page renders a download link per
+version. Binaries stay as GitHub release assets, so archives cost the repo nothing.
+
 ```
 publish release  ip-printer/v29  (binary asset + notes)
         │

@@ -173,6 +173,15 @@ test('tool page: responsive meta, download link, version, history', () => {
   assert.ok(!/\s(width|height)="\d+"/.test(html) || /max-width:\s*100%/.test(html)); // images must be fluid
 });
 
+test('each version in history has its own archive download link', () => {
+  const m2 = { tool: 'ip-printer', name: 'IP Printer', latest: 28, releases: [
+    { build: 28, date: '2026-07-14', notes: 'x', url: 'https://x/v28/MunerisIpPrinter.exe', sha256: 'a' },
+    { build: 27, date: '2026-07-05', notes: 'y', url: 'https://x/v27/MunerisIpPrinter.exe', sha256: 'b' } ] };
+  const html = renderToolPage(tool, m2, {});
+  // an archive link for the OLDER build must be present
+  assert.match(html, /class="dl"[^>]*href="https:\/\/x\/v27\/MunerisIpPrinter\.exe"/);
+});
+
 test('index lists each tool with a link to its page', () => {
   const html = renderIndex([tool], { 'ip-printer': manifest });
   assert.match(html, /href="ip-printer\/"/);
@@ -220,6 +229,7 @@ export function renderToolPage(tool, manifest, docs = {}) {
     <section class="rel">
       <h3>v${r.build} <small>${r.date}</small></h3>
       ${marked.parse(r.notes || '')}
+      ${r.url ? `<a class="dl" href="${r.url}">Download v${r.build}</a>` : ''}
     </section>`).join('\n');
   const body = `
 <a class="back" href="/MunerisTools/">← All tools</a>
@@ -278,6 +288,8 @@ h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); margin: .2em 0; }
 .card { display:block; text-decoration:none; color:inherit; border:1px solid var(--line);
   border-radius:12px; padding:16px; }
 .rel { border-top:1px solid var(--line); padding-top:12px; }
+.dl { display:inline-block; margin-top:8px; color:var(--accent); text-decoration:none; font-weight:600; min-height:44px; }
+.dl::before { content:"⬇ "; }
 small { color:var(--muted); font-weight:400; }
 pre { overflow-x:auto; background:rgba(127,127,127,.12); padding:12px; border-radius:8px; }
 .back, .card:hover h2 { color:var(--accent); }
