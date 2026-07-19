@@ -8,5 +8,5 @@ order: 2
 
 Because it's a predictable CLI it's naturally **agent-drivable**: Claude Code, Codex or Gemini CLI can run it directly.
 
-_Coming to this page soon — [get in touch](mailto:mb@muneris.dk) for early access._
+_Coming to this page soon — [get in touch](mailto:support@muneris.dk) for early access._
 
