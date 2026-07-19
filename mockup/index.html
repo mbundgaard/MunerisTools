@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muneris Tools</title>
+<style>
+  :root{
+    --paper:#F5F7FB; --surface:#FFFFFF; --line:#E2E8F1; --line-2:#EDF1F7;
+    --text:#111A28; --muted:#586a82; --muted-2:#8593a6; --brand:#2C67E3; --brand-2:#1E4EAF;
+    --mono:ui-monospace,'Cascadia Code','SF Mono','Consolas',monospace;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --paper:#0B0F17; --surface:#121A26; --line:#212D3D; --line-2:#19222F;
+      --text:#E7ECF4; --muted:#8897AD; --muted-2:#5B6A80; --brand:#5B98FF; --brand-2:#8BB6FF; }
+  }
+  :root[data-theme="dark"]{ --paper:#0B0F17; --surface:#121A26; --line:#212D3D; --line-2:#19222F;
+    --text:#E7ECF4; --muted:#8897AD; --muted-2:#5B6A80; --brand:#5B98FF; --brand-2:#8BB6FF; }
+  :root[data-theme="light"]{ --paper:#F5F7FB; --surface:#FFFFFF; --line:#E2E8F1; --line-2:#EDF1F7;
+    --text:#111A28; --muted:#586a82; --muted-2:#8593a6; --brand:#2C67E3; --brand-2:#1E4EAF; }
+
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--text); font-family:var(--sans);
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;}
+  a{color:inherit;}
+  .wrap{max-width:940px; margin:0 auto; padding:0 28px;}
+
+  header{border-bottom:1px solid var(--line);}
+  header .wrap{display:flex; align-items:center; justify-content:space-between; height:62px; gap:16px;}
+  .mark{font-weight:700; letter-spacing:.01em; font-size:16px;}
+  .mark b{color:var(--brand);}
+  header .right{display:flex; align-items:center; gap:16px; font-size:14px;}
+  header a{color:var(--muted); text-decoration:none;}
+  header a:hover{color:var(--brand);}
+  .tg{border:1px solid var(--line); background:transparent; color:var(--muted); width:32px; height:32px;
+    border-radius:8px; cursor:pointer; font-size:14px; display:grid; place-items:center;}
+  .tg:hover{border-color:var(--brand); color:var(--brand);}
+
+  .intro{padding:56px 0 8px;}
+  .intro h1{font-size:30px; font-weight:730; letter-spacing:-.02em; margin:0 0 14px; text-wrap:balance;}
+  .intro p{margin:0; color:var(--muted); font-size:17px; max-width:60ch;}
+  .intro p a{color:var(--brand); text-decoration:none;}
+  .intro p a:hover{text-decoration:underline;}
+
+  .tools{padding:34px 0 20px;}
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (max-width:680px){ .grid{grid-template-columns:1fr;} }
+
+  .card{display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; padding:20px 20px 16px; text-decoration:none; color:inherit;
+    transition:border-color .15s, transform .15s;}
+  .card:hover{border-color:var(--brand); transform:translateY(-2px);}
+  .card .h{display:flex; align-items:baseline; justify-content:space-between; gap:12px;}
+  .card h2{font-size:18px; font-weight:680; margin:0;}
+  .ver{font-family:var(--mono); font-size:12px; color:var(--muted-2); white-space:nowrap;}
+  .card p{color:var(--muted); font-size:14.5px; margin:9px 0 0;}
+  .card .foot{margin-top:16px; display:flex; align-items:center; gap:14px; font-size:14px;}
+  .card .dl{color:var(--brand); font-weight:620; text-decoration:none;}
+  .card .docs{color:var(--muted); text-decoration:none;}
+  .card .docs:hover{color:var(--text);}
+  .ai{display:inline-block; font-family:var(--mono); font-size:11px; color:var(--brand);
+    border:1px solid color-mix(in srgb,var(--brand) 32%, transparent); padding:1px 6px; border-radius:5px; margin-left:8px;}
+
+  footer{border-top:1px solid var(--line); margin-top:34px; padding:26px 0 50px; color:var(--muted-2); font-size:13.5px;}
+  footer .wrap{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center;}
+  footer a{color:var(--muted); text-decoration:none;}
+  footer a:hover{color:var(--brand);}
+  footer .sep{color:var(--line);}
+  :focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:6px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="mark">Muneris<b>Tools</b></span>
+    <span class="right">
+      <a href="mailto:support@muneris.dk">support@muneris.dk</a>
+      <button class="tg" id="tg" aria-label="Toggle theme">◐</button>
+    </span>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <div class="wrap">
+      <h1>Tools we built to make POS work easier</h1>
+      <p>We make these small Windows utilities to simplify our own work on hospitality point-of-sale,
+        and we share them with our customers — it seemed like a nice thing to do. Each tool is a single
+        self-contained <code>.exe</code> — no installation required. Several are built with, and can be
+        driven by, AI coding agents like <a href="https://claude.com/claude-code">Claude Code</a>,
+        Codex, or Gemini CLI.</p>
+    </div>
+  </section>
+
+  <section class="tools">
+    <div class="wrap">
+      <div class="grid">
+
+        <a class="card" href="#">
+          <div class="h"><h2>IP Printer <span class="ai">agent</span></h2><span class="ver">v28</span></div>
+          <p>Fifteen ESC/POS receipt printers on loopback IPs, rendered on screen instead of paper.</p>
+          <div class="foot"><span class="dl">Download</span><span class="docs">Docs &amp; versions →</span></div>
+        </a>
+
+        <a class="card" href="#">
+          <div class="h"><h2>KDS Simphony</h2><span class="ver">build 10</span></div>
+          <p>Kitchen-display routing and label printing extension for Oracle Simphony.</p>
+          <div class="foot"><span class="dl">Download</span><span class="docs">Docs &amp; versions →</span></div>
+        </a>
+
+        <a class="card" href="#">
+          <div class="h"><h2>Receipt Lab <span class="ai">agent</span></h2><span class="ver">preview</span></div>
+          <p>Compose and preview ESC/POS receipts from raw command bytes.</p>
+          <div class="foot"><span class="docs">Coming soon</span></div>
+        </a>
+
+        <a class="card" href="#">
+          <div class="h"><h2>EFT Simulator</h2><span class="ver">preview</span></div>
+          <p>A stand-in payment terminal that answers auth requests for integration tests.</p>
+          <div class="foot"><span class="docs">Coming soon</span></div>
+        </a>
+
+        <a class="card" href="#">
+          <div class="h"><h2>Print Spy <span class="ai">agent</span></h2><span class="ver">preview</span></div>
+          <p>Tap a print port and capture exactly what a POS sends, then diff two runs.</p>
+          <div class="foot"><span class="docs">Coming soon</span></div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:var(--muted)">Muneris</b> — software development &amp; consulting for hospitality POS</span>
+    <span class="sep">·</span>
+    <a href="https://muneris.dk">muneris.dk</a>
+    <span class="sep">·</span>
+    <a href="mailto:support@muneris.dk">support@muneris.dk</a>
+  </div>
+</footer>
+
+<script>
+  const tg=document.getElementById('tg'),root=document.documentElement;
+  if(location.hash==='#dark'||location.hash==='#light')root.setAttribute('data-theme',location.hash.slice(1));
+  tg.addEventListener('click',()=>{const d=matchMedia('(prefers-color-scheme:dark)').matches;
+    const c=root.getAttribute('data-theme')||(d?'dark':'light');root.setAttribute('data-theme',c==='dark'?'light':'dark');});
+</script>
+</body>
+</html>

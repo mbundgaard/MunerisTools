@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muneris Tools</title>
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg-alt:#0f141c;
+    --panel:#121924;
+    --panel-2:#161f2c;
+    --border:#1f2a3a;
+    --border-hi:#2b3b52;
+    --text:#e6edf3;
+    --muted:#8b98ab;
+    --dim:#5c6a7e;
+    --accent:#4dd0a7;
+    --accent-2:#3b82f6;
+    --accent-glow:rgba(77,208,167,.15);
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  code,.mono{font-family:var(--mono)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---- nav ---- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,14,20,.8);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em;font-size:17px;cursor:pointer}
+  .brand .logo{
+    width:26px;height:26px;border-radius:6px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:700;font-size:14px;color:#04120d;
+  }
+  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
+  .nav-links a:hover{color:var(--text)}
+  @media(max-width:640px){.nav-links{display:none}}
+
+  /* ---- hero ---- */
+  header.hero{
+    position:relative;overflow:hidden;
+    padding:96px 0 72px;
+    border-bottom:1px solid var(--border);
+    background:
+      radial-gradient(600px 300px at 80% -10%,var(--accent-glow),transparent 70%),
+      radial-gradient(500px 260px at 10% 10%,rgba(59,130,246,.10),transparent 70%);
+  }
+  .grid-bg{
+    position:absolute;inset:0;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 20%,transparent 75%);
+            mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 20%,transparent 75%);
+    opacity:.5;
+  }
+  .hero-inner{position:relative}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:12px;color:var(--accent);
+    border:1px solid var(--border-hi);border-radius:100px;
+    padding:5px 12px;margin-bottom:24px;background:var(--panel);
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  h1{font-size:52px;line-height:1.05;letter-spacing:-.03em;font-weight:700;max-width:16ch}
+  h1 .grad{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lede{margin-top:20px;font-size:18px;color:var(--muted);max-width:52ch}
+  .hero-cta{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:14px;font-weight:500;padding:11px 20px;border-radius:8px;cursor:pointer;
+    border:1px solid transparent;transition:.15s;
+  }
+  .btn-primary{background:var(--accent);color:#04120d}
+  .btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn-ghost{background:var(--panel);border-color:var(--border-hi);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  @media(max-width:640px){h1{font-size:36px}}
+
+  /* ---- section ---- */
+  section{padding:72px 0}
+  .sec-head{margin-bottom:36px}
+  .sec-label{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+  .sec-head h2{font-size:30px;letter-spacing:-.02em;margin-top:10px;font-weight:650}
+  .sec-head p{color:var(--muted);margin-top:8px;max-width:60ch}
+
+  /* ---- tools grid ---- */
+  .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:860px){.tools{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.tools{grid-template-columns:1fr}}
+  .card{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;padding:22px;
+    cursor:pointer;transition:.18s;
+    display:flex;flex-direction:column;min-height:190px;
+  }
+  .card:hover{border-color:var(--border-hi);transform:translateY(-3px);background:var(--panel-2)}
+  .card:hover .card-arrow{color:var(--accent);transform:translateX(3px)}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .card-ico{
+    width:40px;height:40px;border-radius:9px;
+    background:var(--panel-2);border:1px solid var(--border-hi);
+    display:flex;align-items:center;justify-content:center;color:var(--accent);
+  }
+  .tag{font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:5px;letter-spacing:.03em;text-transform:uppercase}
+  .tag.stable{background:rgba(77,208,167,.12);color:var(--accent);border:1px solid rgba(77,208,167,.25)}
+  .tag.beta{background:rgba(59,130,246,.12);color:#6ea8fe;border:1px solid rgba(59,130,246,.25)}
+  .tag.soon{background:rgba(139,152,171,.1);color:var(--muted);border:1px solid var(--border-hi)}
+  .tag.ai{background:linear-gradient(120deg,rgba(77,208,167,.15),rgba(59,130,246,.15));color:#8fe3c8;border:1px solid rgba(77,208,167,.3)}
+  .ai-pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;color:#8fe3c8;margin-top:8px}
+  .ai-pill svg{width:12px;height:12px}
+  .tag.ai{display:inline-flex;align-items:center;gap:4px}
+  .tag.ai svg{width:11px;height:11px}
+  .card h3{font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+  .card .desc{color:var(--muted);font-size:13.5px;margin-top:6px;flex:1}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+  .card-arrow{transition:.18s;color:var(--dim)}
+
+  /* ---- about / services ---- */
+  .split{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+  @media(max-width:760px){.split{grid-template-columns:1fr;gap:32px}}
+  .about-body p{color:var(--muted);margin-bottom:16px}
+  .about-body p strong{color:var(--text);font-weight:600}
+  .svc-list{display:flex;flex-direction:column;gap:2px}
+  .svc{display:flex;gap:14px;padding:16px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+  .svc + .svc{margin-top:10px}
+  .svc .n{font-family:var(--mono);color:var(--accent);font-size:13px;padding-top:1px}
+  .svc h4{font-size:14.5px;font-weight:600}
+  .svc p{font-size:13px;color:var(--muted);margin-top:3px}
+
+  /* ---- contact ---- */
+  .contact-box{
+    border:1px solid var(--border);border-radius:16px;
+    background:
+      radial-gradient(500px 200px at 100% 0%,var(--accent-glow),transparent 70%),
+      var(--panel);
+    padding:44px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;
+  }
+  .contact-box h2{font-size:26px;letter-spacing:-.02em}
+  .contact-box p{color:var(--muted);margin-top:8px;max-width:44ch}
+  .contact-mail{font-family:var(--mono);font-size:15px;color:var(--accent);margin-top:14px;display:inline-block}
+
+  /* ---- footer ---- */
+  footer{border-top:1px solid var(--border);padding:32px 0;color:var(--dim);font-size:13px}
+  .foot-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  /* ================= TOOL DETAIL PAGE ================= */
+  #tool-page{display:none}
+  .back{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:13px;font-family:var(--mono);margin-bottom:28px;cursor:pointer}
+  .back:hover{color:var(--accent)}
+  .tool-hero{display:flex;gap:20px;align-items:flex-start;padding-bottom:28px;border-bottom:1px solid var(--border);margin-bottom:0}
+  .tool-hero .card-ico{width:56px;height:56px;border-radius:12px;flex:none}
+  .tool-hero h1{font-size:30px;margin:0}
+  .tool-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .tool-meta span{display:inline-flex;align-items:center;gap:6px}
+  .tool-lede{color:var(--muted);margin-top:12px;max-width:60ch}
+
+  /* tool switcher strip */
+  .tool-switcher{display:flex;gap:8px;overflow-x:auto;padding:20px 0 4px;margin-top:4px;scrollbar-width:thin}
+  .tool-switcher::-webkit-scrollbar{height:6px}
+  .tool-switcher::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
+  .tsw{
+    display:flex;align-items:center;gap:8px;flex:none;cursor:pointer;
+    padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:var(--panel);
+    font-size:13px;color:var(--muted);transition:.15s;white-space:nowrap;
+  }
+  .tsw:hover{border-color:var(--border-hi);color:var(--text)}
+  .tsw.active{border-color:var(--accent);color:var(--text);background:var(--panel-2)}
+  .tsw .tsw-ico{width:18px;height:18px;color:var(--accent);display:flex;align-items:center;justify-content:center}
+  .tsw .tsw-ico svg{width:16px;height:16px}
+  .tsw .tsw-dot{width:6px;height:6px;border-radius:50%;flex:none}
+  .tsw .tsw-dot.stable{background:var(--accent)}
+  .tsw .tsw-dot.beta{background:#6ea8fe}
+  .tsw .tsw-dot.soon{background:var(--dim)}
+
+  /* prev / next footer */
+  .tool-nav{display:flex;justify-content:space-between;gap:16px;margin-top:44px;padding-top:24px;border-top:1px solid var(--border)}
+  .tnav{flex:1;border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--panel);cursor:pointer;transition:.15s;max-width:48%}
+  .tnav:hover{border-color:var(--accent);background:var(--panel-2)}
+  .tnav.next{text-align:right}
+  .tnav .dir{font-family:var(--mono);font-size:11px;color:var(--dim)}
+  .tnav .nm{font-size:14px;font-weight:600;margin-top:3px}
+  .tnav.empty{visibility:hidden}
+
+  .tool-layout{display:grid;grid-template-columns:1fr 280px;gap:40px;margin-top:24px;align-items:start}
+  @media(max-width:820px){.tool-layout{grid-template-columns:1fr}}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:28px}
+  .tab{
+    padding:10px 16px;font-size:13.5px;color:var(--muted);cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;
+  }
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab .badge{font-family:var(--mono);font-size:10px;background:var(--panel-2);border:1px solid var(--border-hi);color:var(--muted);padding:1px 6px;border-radius:20px;margin-left:6px}
+
+  /* rendered markdown */
+  .md{font-size:14.5px;color:var(--text)}
+  .md h1,.md h2,.md h3{letter-spacing:-.01em;font-weight:650;margin:26px 0 12px}
+  .md h1{font-size:24px}
+  .md h2{font-size:19px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .md h3{font-size:15.5px;color:var(--muted);text-transform:none}
+  .md p{margin:12px 0;color:var(--muted)}
+  .md ul{margin:12px 0 12px 20px;color:var(--muted)}
+  .md li{margin:5px 0}
+  .md strong{color:var(--text)}
+  .md a{color:var(--accent);border-bottom:1px solid rgba(77,208,167,.3)}
+  .md code{background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1.5px 6px;font-size:12.5px;color:var(--accent)}
+  .md pre{background:#070b11;border:1px solid var(--border);border-radius:10px;padding:16px 18px;overflow:auto;margin:16px 0}
+  .md pre code{background:none;border:none;padding:0;color:#c9d4e3;font-size:12.5px;line-height:1.7;display:block}
+  .md pre .c{color:var(--dim)}
+  .md pre .k{color:#6ea8fe}
+  .md pre .s{color:var(--accent)}
+  .md table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+  .md th,.md td{text-align:left;padding:9px 12px;border:1px solid var(--border)}
+  .md th{background:var(--panel);color:var(--text);font-weight:600}
+  .md td{color:var(--muted)}
+  .md blockquote{border-left:3px solid var(--accent);padding:4px 16px;margin:16px 0;color:var(--muted);background:var(--panel);border-radius:0 8px 8px 0}
+
+  /* changelog */
+  .cl-entry{padding:0 0 24px 24px;border-left:1px solid var(--border);position:relative;margin-left:6px}
+  .cl-entry::before{content:"";position:absolute;left:-5px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--bg)}
+  .cl-entry:last-child{border-left-color:transparent}
+  .cl-ver{display:flex;align-items:baseline;gap:12px}
+  .cl-ver .v{font-family:var(--mono);font-weight:600;font-size:15px}
+  .cl-ver .d{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .cl-latest{font-family:var(--mono);font-size:10px;background:rgba(77,208,167,.12);color:var(--accent);border:1px solid rgba(77,208,167,.25);padding:1px 7px;border-radius:20px}
+  .cl-entry ul{margin:10px 0 0 18px;color:var(--muted);font-size:13.5px}
+  .cl-entry li{margin:5px 0}
+  .chip{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:4px;margin-right:8px;text-transform:uppercase}
+  .chip.add{background:rgba(77,208,167,.12);color:var(--accent)}
+  .chip.fix{background:rgba(59,130,246,.12);color:#6ea8fe}
+  .chip.chg{background:rgba(234,179,8,.12);color:#eab308}
+
+  /* sidebar */
+  .side{position:sticky;top:80px;display:flex;flex-direction:column;gap:16px}
+  .side-card{border:1px solid var(--border);border-radius:12px;background:var(--panel);padding:18px}
+  .side-card h4{font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:14px}
+  .dl{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--border);border-radius:9px;background:var(--panel-2);margin-bottom:8px;transition:.15s;cursor:pointer}
+  .dl:hover{border-color:var(--accent);transform:translateX(2px)}
+  .dl:last-child{margin-bottom:0}
+  .dl .os{width:30px;height:30px;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--muted);flex:none}
+  .dl .t{font-size:13px;font-weight:500}
+  .dl .sub{font-family:var(--mono);font-size:11px;color:var(--dim)}
+  .dl .arrow{margin-left:auto;color:var(--dim)}
+  .meta-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border)}
+  .meta-row:last-child{border:none}
+  .meta-row .l{color:var(--dim)}
+  .meta-row .r{font-family:var(--mono);color:var(--text)}
+  .side-card .repo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .side-card .repo:hover{color:var(--accent)}
+  svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand" onclick="showHome()">
+      <div class="logo">M</div> Muneris
+    </div>
+    <div class="nav-links">
+      <a onclick="showHome()" style="cursor:pointer">Tools</a>
+      <a onclick="showHome();setTimeout(()=>document.getElementById('about').scrollIntoView(),20)" style="cursor:pointer">About</a>
+      <a onclick="showHome();setTimeout(()=>document.getElementById('contact').scrollIntoView(),20)" style="cursor:pointer">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HOME ================= -->
+<main id="home">
+  <header class="hero">
+    <div class="grid-bg"></div>
+    <div class="wrap hero-inner">
+      <h1>Small tools that make POS work a little <span class="grad">easier</span>.</h1>
+      <p class="lede">We make these Windows utilities to simplify our own work on hospitality point-of-sale, and we share them with our customers. Some are small, some a bit larger; they come with no strings attached and no warranty — but we always welcome your feedback.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" onclick="document.getElementById('tools').scrollIntoView()">
+          <svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg> Browse tools
+        </a>
+        <a class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView()">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- tools -->
+  <section id="tools">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="sec-label">// Tools</div>
+        <h2>Tools &amp; utilities</h2>
+        <p>Each tool is a single self-contained <code>.exe</code> — no installation required. Several are built with, and can be driven by, AI coding agents like Claude Code, Codex, or Gemini CLI.</p>
+      </div>
+      <div class="tools" id="tools-grid"></div>
+    </div>
+  </section>
+
+  <!-- about / services -->
+  <section id="about" style="background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="wrap split">
+      <div>
+        <div class="sec-label">// About</div>
+        <h2 style="font-size:30px;letter-spacing:-.02em;margin-top:10px;font-weight:650">Development &amp; consulting</h2>
+        <div class="about-body" style="margin-top:18px">
+          <p>Muneris is an independent software studio focused on <strong>hospitality and point-of-sale integration</strong>. The tools on this page came out of real client work — small, sharp utilities built to remove friction from day-to-day operations.</p>
+          <p>AI is baked into how Muneris works. Many tools ship with <strong>agent-friendly interfaces</strong> — clean CLIs and structured output — so they can be driven directly by <strong>Claude Code, Codex</strong> or similar agents, not just by hand.</p>
+          <p>Beyond the free tools, Muneris takes on <strong>consulting and custom development</strong> engagements: system integrations, automation, and bespoke internal tooling — primarily on the .NET stack.</p>
+        </div>
+      </div>
+      <div>
+        <div class="svc-list">
+          <div class="svc"><div class="n">01</div><div><h4>System integration</h4><p>Connecting POS, KDS, printing and back-office systems that were never meant to talk to each other.</p></div></div>
+          <div class="svc"><div class="n">02</div><div><h4>Custom tooling</h4><p>CLIs, services and utilities tailored to a specific operational pain point.</p></div></div>
+          <div class="svc"><div class="n">03</div><div><h4>Automation</h4><p>Scripting and services that remove repetitive manual work from the floor and the office.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- contact -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-box">
+        <div>
+          <div class="sec-label">// Contact</div>
+          <h2 style="margin-top:10px">Have a project or a question?</h2>
+          <p>Whether you want to report a bug in a tool or scope a custom build, drop a line.</p>
+          <a class="contact-mail" href="mailto:mb@muneris.dk">mb@muneris.dk</a>
+        </div>
+        <a class="btn btn-primary" href="mailto:mb@muneris.dk">
+          <svg class="i" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg> Email Muneris
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap foot-inner">
+      <div>© 2026 Muneris — Software Development &amp; Consulting</div>
+      <div class="mono">mb@muneris.dk</div>
+    </div>
+  </footer>
+</main>
+
+<!-- ================= TOOL DETAIL ================= -->
+<main id="tool-page">
+  <div class="wrap" style="padding-top:40px;padding-bottom:80px">
+    <div class="back" onclick="showHome()">
+      <svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M15 18l-6-6 6-6"/></svg> All tools
+    </div>
+
+    <div class="tool-hero">
+      <div class="card-ico" id="tp-ico"></div>
+      <div>
+        <h1 id="tp-name"></h1>
+        <div class="tool-meta" id="tp-meta"></div>
+        <p class="tool-lede" id="tp-lede"></p>
+      </div>
+    </div>
+
+    <div class="tool-switcher" id="tp-switcher"></div>
+
+    <div class="tool-layout">
+      <div>
+        <div class="tabs">
+          <div class="tab active" data-tab="docs" onclick="switchTab('docs')">Documentation</div>
+          <div class="tab" data-tab="changelog" onclick="switchTab('changelog')">Changelog <span class="badge" id="tp-clcount"></span></div>
+        </div>
+        <div id="panel-docs" class="md"></div>
+        <div id="panel-changelog" style="display:none"></div>
+        <div class="tool-nav" id="tp-prevnext"></div>
+      </div>
+
+      <aside class="side">
+        <div class="side-card">
+          <h4>Download</h4>
+          <div id="tp-downloads"></div>
+        </div>
+        <div class="side-card">
+          <h4>Details</h4>
+          <div id="tp-details"></div>
+        </div>
+        <div class="side-card">
+          <a class="repo" id="tp-repo">
+            <svg class="i" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.5 1.3a12 12 0 0 0-6.3 0C6.5 2.8 5.5 3.1 5.5 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ---------- data (in production this comes from md files in each tool's repo) ---------- */
+const ICONS = {
+  printer:'<svg class="i" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>',
+  terminal:'<svg class="i" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>',
+  kds:'<svg class="i" viewBox="0 0 24 24"><rect x="2" y="4" width="9" height="7" rx="1"/><rect x="13" y="4" width="9" height="7" rx="1"/><rect x="2" y="13" width="9" height="7" rx="1"/><rect x="13" y="13" width="9" height="7" rx="1"/></svg>',
+  sync:'<svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.7-3M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3"/><path d="M21 3v5h-5M3 21v-5h5"/></svg>',
+  gauge:'<svg class="i" viewBox="0 0 24 24"><path d="M12 15l4-4"/><path d="M3 18a9 9 0 1 1 18 0"/></svg>',
+  key:'<svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M17 6l2 2M15 8l2 2"/></svg>'
+};
+const win='<svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M3 5.5 10.5 4.5v7H3zM10.5 4.4 21 3v8.5H10.5zM3 12.5h7.5v7L3 18.5zM10.5 12.5H21V21l-10.5-1.5z" fill="currentColor" stroke="none"/></svg>';
+const sparkle='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/></svg>';
+
+const TOOLS = __TOOLS__;
+
+/* ---------- render home grid ---------- */
+const STATUS_LABEL = {stable:'Stable',beta:'Beta',soon:'Coming soon'};
+function renderGrid(){
+  document.getElementById('tools-grid').innerHTML = TOOLS.map(t=>`
+    <div class="card" onclick="openTool('${t.id}')">
+      <div class="card-top">
+        <div class="card-ico">${ICONS[t.icon]}</div>
+        <span class="tag ${t.status}">${STATUS_LABEL[t.status]}</span>
+      </div>
+      <h3>${t.name}</h3>
+      <div class="desc">${t.short}</div>
+      ${t.ai?`<div class="ai-pill">${sparkle} AI-enabled · agent-drivable</div>`:''}
+      <div class="card-foot">
+        <span>${t.status==='soon'?'in development':'v'+t.version}</span>
+        <span class="card-arrow">
+          <svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------- tiny markdown renderer ---------- */
+function md(src){
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const blocks=src.split(/```/);
+  let out='';
+  blocks.forEach((b,i)=>{
+    if(i%2){ // code block
+      const nl=b.indexOf('\n'); const body=b.slice(nl+1);
+      let code=esc(body.replace(/\s+$/,''))
+        .replace(/(^|\n)(#.*)/g,'$1<span class="c">$2</span>')
+        .replace(/\b(bash|json|simphony|vipp|multikds|configdiff)\b/g,'<span class="k">$1</span>')
+        .replace(/("[^"]*")/g,'<span class="s">$1</span>');
+      out+=`<pre><code>${code}</code></pre>`;
+    } else {
+      out+=inline(b);
+    }
+  });
+  return out;
+
+  function inline(text){
+    const lines=text.split('\n'); let html=''; let i=0;
+    while(i<lines.length){
+      let l=lines[i];
+      if(/^\|/.test(l)){ // table
+        const rows=[]; while(i<lines.length && /^\|/.test(lines[i])){rows.push(lines[i]);i++;}
+        const cells=r=>r.split('|').slice(1,-1).map(c=>c.trim());
+        const head=cells(rows[0]); const body=rows.slice(2).map(cells);
+        html+='<table><thead><tr>'+head.map(h=>`<th>${fmt(h)}</th>`).join('')+'</tr></thead><tbody>'+
+          body.map(r=>'<tr>'+r.map(c=>`<td>${fmt(c)}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+        continue;
+      }
+      if(/^>\s/.test(l)){html+=`<blockquote>${fmt(l.replace(/^>\s/,''))}</blockquote>`;i++;continue;}
+      if(/^###\s/.test(l)){html+=`<h3>${fmt(l.slice(4))}</h3>`;i++;continue;}
+      if(/^##\s/.test(l)){html+=`<h2>${fmt(l.slice(3))}</h2>`;i++;continue;}
+      if(/^#\s/.test(l)){html+=`<h1>${fmt(l.slice(2))}</h1>`;i++;continue;}
+      if(/^-\s/.test(l)){const items=[];while(i<lines.length&&/^-\s/.test(lines[i])){items.push(lines[i].slice(2));i++;}html+='<ul>'+items.map(x=>`<li>${fmt(x)}</li>`).join('')+'</ul>';continue;}
+      if(l.trim()===''){i++;continue;}
+      html+=`<p>${fmt(l)}</p>`;i++;
+    }
+    return html;
+  }
+  function fmt(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>');
+  }
+}
+
+/* ---------- open tool ---------- */
+function openTool(id){
+  const t=TOOLS.find(x=>x.id===id); if(!t)return;
+  document.getElementById('tp-ico').innerHTML=ICONS[t.icon];
+  document.getElementById('tp-name').textContent=t.name;
+  document.getElementById('tp-lede').textContent=t.lede;
+  document.getElementById('tp-meta').innerHTML=
+    `<span class="tag ${t.status}">${STATUS_LABEL[t.status]}</span>`+
+    (t.ai?`<span class="tag ai">${sparkle} AI-enabled</span>`:'')+
+    (t.status!=='soon'?`<span>v${t.version}</span><span>·</span><span>updated ${t.updated}</span>`:'<span>in development</span>');
+
+  document.getElementById('panel-docs').innerHTML=t.docsHtml;
+
+  // changelog
+  document.getElementById('tp-clcount').textContent=t.changelog.length;
+  document.getElementById('panel-changelog').innerHTML=t.changelog.map(c=>`
+    <div class="cl-entry">
+      <div class="cl-ver"><span class="v">v${c.v}</span><span class="d">${c.d}</span>${c.latest?'<span class="cl-latest">latest</span>':''}</div>
+      <div class="md">${c.notesHtml||''}</div>
+    </div>`).join('');
+
+  // downloads
+  const dl=document.getElementById('tp-downloads');
+  if(t.downloads.length){
+    dl.innerHTML=t.downloads.map(d=>`
+      <a class="dl" href="${d.url||'#'}"${d.url?' download':''}>
+        <div class="os">${win}</div>
+        <div><div class="t">${d.t}</div><div class="sub">${d.sub}</div></div>
+        <span class="arrow"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M12 4v12M6 12l6 6 6-6M4 20h16"/></svg></span>
+      </a>`).join('');
+  } else {
+    dl.innerHTML='<div style="font-size:13px;color:var(--dim)">Not yet available. <a href="mailto:mb@muneris.dk" style="color:var(--accent)">Request early access</a>.</div>';
+  }
+
+  // details
+  document.getElementById('tp-details').innerHTML=`
+    <div class="meta-row"><span class="l">Version</span><span class="r">${t.version}</span></div>
+    <div class="meta-row"><span class="l">Updated</span><span class="r">${t.updated}</span></div>
+    <div class="meta-row"><span class="l">Size</span><span class="r">${t.size}</span></div>
+    <div class="meta-row"><span class="l">Runtime</span><span class="r">${t.runtime}</span></div>
+    <div class="meta-row"><span class="l">License</span><span class="r">${t.license}</span></div>`;
+
+  const repoA=document.getElementById('tp-repo'), repoCard=repoA.parentElement;
+  if(t.status==='soon'){ repoCard.style.display='none'; }
+  else {
+    repoCard.style.display='';
+    repoA.href='https://github.com/mbundgaard/MunerisTools/releases?q='+t.id+'&expanded=true';
+    repoA.innerHTML=
+      `<svg class="i" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.5 1.3a12 12 0 0 0-6.3 0C6.5 2.8 5.5 3.1 5.5 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg> All releases on GitHub`;
+  }
+
+  // tool switcher (jump straight to another tool)
+  document.getElementById('tp-switcher').innerHTML=TOOLS.map(x=>`
+    <div class="tsw ${x.id===t.id?'active':''}" onclick="openTool('${x.id}')">
+      <span class="tsw-ico">${ICONS[x.icon]}</span>${x.name}
+      <span class="tsw-dot ${x.status}"></span>
+    </div>`).join('');
+
+  // prev / next
+  const idx=TOOLS.findIndex(x=>x.id===t.id);
+  const prev=TOOLS[idx-1], next=TOOLS[idx+1];
+  document.getElementById('tp-prevnext').innerHTML=
+    (prev?`<div class="tnav" onclick="openTool('${prev.id}')"><div class="dir">← Previous</div><div class="nm">${prev.name}</div></div>`:'<div class="tnav empty"></div>')+
+    (next?`<div class="tnav next" onclick="openTool('${next.id}')"><div class="dir">Next →</div><div class="nm">${next.name}</div></div>`:'<div class="tnav empty"></div>');
+
+  switchTab('docs');
+  document.getElementById('home').style.display='none';
+  document.getElementById('tool-page').style.display='block';
+  window.scrollTo(0,0);
+}
+
+function switchTab(which){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===which));
+  document.getElementById('panel-docs').style.display=which==='docs'?'block':'none';
+  document.getElementById('panel-changelog').style.display=which==='changelog'?'block':'none';
+}
+function showHome(){
+  document.getElementById('tool-page').style.display='none';
+  document.getElementById('home').style.display='block';
+  window.scrollTo(0,0);
+}
+renderGrid();
+(function(){const h=location.hash.replace(/^#/,''); if(h && TOOLS.find(t=>t.id===h)) openTool(h);})();
+</script>
+</body>
+</html>

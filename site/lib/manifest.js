@@ -14,6 +14,7 @@ export function buildManifest(releases, tool) {
       date: (r.published_at || '').slice(0, 10),
       notes: r.body || '',
       url: asset ? asset.browser_download_url : null,
+      size: asset ? asset.size : null,
       sha256: asset && asset.digest ? asset.digest.replace(/^sha256:/, '') : null
     });
   }
