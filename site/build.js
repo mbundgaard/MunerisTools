@@ -40,9 +40,10 @@ function main() {
 
   const tools = slugs.map(slug => {
     const dir = join(TOOLS_DIR, slug);
-    const tj = JSON.parse(readFileSync(join(dir, 'tool.json'), 'utf8'));
-    const rel = tj.release;                 // latest release only; absent → Coming soon
-    const status = rel ? 'stable' : 'soon';
+    const tj = JSON.parse(readFileSync(join(dir, 'tool.json'), 'utf8'));   // frame (human-authored)
+    const relPath = join(dir, 'release.json');                             // latest release (pipeline-written)
+    const rel = existsSync(relPath) ? JSON.parse(readFileSync(relPath, 'utf8')) : null;
+    const status = rel ? 'stable' : 'soon';                                // no release.json → Coming soon
 
     // App-facing manifest (auto-update reads latest + download url).
     if (rel) {
