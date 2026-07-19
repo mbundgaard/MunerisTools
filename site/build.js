@@ -23,16 +23,21 @@ function parseDoc(raw) {
   return { title, order, body };
 }
 
-// Turn "- add: …" / "- fix: …" / "- chg: …" list items into little coloured change chips.
-const CHIPS = html => html.replace(/<li>(add|fix|chg):\s*/gi,
-  (_, t) => `<li><span class="chip ${t.toLowerCase()}">${t.toLowerCase()}</span> `);
+// Light markdown decorations:
+//  - "## v28 — 2026-07-14" changelog headers → version on top, small muted date below
+//  - "- add:/fix:/chg: …" list items → coloured change chips
+const decorate = html => html
+  .replace(/<h2>(v\d+)\s*—\s*(\d{4}-\d{2}-\d{2})<\/h2>/gi,
+    '<div class="cl-h"><span class="cl-v">$1</span><span class="cl-d">$2</span></div>')
+  .replace(/<li>(add|fix|chg):\s*/gi,
+    (_, t) => `<li><span class="chip ${t.toLowerCase()}">${t.toLowerCase()}</span> `);
 
 // One sub-page (tab) per markdown file in the tool folder, sorted by order then title.
 export function docPages(dir) {
   return readdirSync(dir).filter(f => f.endsWith('.md'))
     .map(f => parseDoc(readFileSync(join(dir, f), 'utf8')))
     .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
-    .map(d => ({ title: d.title, html: `<div class="md">${CHIPS(marked.parse(d.body))}</div>` }));
+    .map(d => ({ title: d.title, html: `<div class="md">${decorate(marked.parse(d.body))}</div>` }));
 }
 
 function main() {
