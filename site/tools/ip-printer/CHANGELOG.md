@@ -3,6 +3,9 @@ title: Changelog
 order: 100
 ---
 
+## v29 — 2026-07-19
+- chg: Maintenance build — no functional changes; validates the automated release pipeline.
+
 ## v28 — 2026-07-14
 - fix: Double-height text now scales width and height independently — a double-height-only line is no longer drawn double-width, so a full 40-character line no longer wraps onto two rows.
 
