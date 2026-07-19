@@ -44,13 +44,13 @@ installer, no admin rights, no .NET runtime to install — uses the in-box
 
 ## Install
 
-<a href="https://github.com/mbundgaard/MunerisTools/releases?q=ip-printer&expanded=true"><img src="https://img.shields.io/badge/Download-MunerisIpPrinter.exe-3A6FB8?style=for-the-badge" alt="Download MunerisIpPrinter.exe"/></a>
+<a href="https://github.com/mbundgaard/MunerisTools/releases/download/ip-printer/MunerisIpPrinter.exe"><img src="https://img.shields.io/badge/Download-MunerisIpPrinter.exe-3A6FB8?style=for-the-badge" alt="Download MunerisIpPrinter.exe"/></a>
 
-Releases are published under the `ip-printer/v…` tag prefix — grab
-`MunerisIpPrinter.exe` from the [newest one](https://github.com/mbundgaard/MunerisTools/releases?q=ip-printer&expanded=true).
-Run it once; the app self-registers nothing — all state lives in
-`%LOCALAPPDATA%\MunerisIpPrinter\` so the .exe folder stays a single portable
-file.
+That badge always downloads the current build. IP Printer ships as a single rolling
+[**`ip-printer`** release](https://github.com/mbundgaard/MunerisTools/releases/tag/ip-printer)
+that we re-point at each new version, so the download link never changes. Run it once;
+the app self-registers nothing — all state lives in `%LOCALAPPDATA%\MunerisIpPrinter\`
+so the .exe folder stays a single portable file.
 
 After the first launch the app checks for newer releases every four hours and
 downloads them in the background. The next time you close and reopen the app,
@@ -97,11 +97,11 @@ clicking the pencil — renames are persisted immediately, no restart needed.
 
 The mechanism, end to end:
 
-1. On startup and every four hours, the app polls
-   `https://api.github.com/repos/mbundgaard/MunerisTools/releases`, keeping only
-   releases tagged `ip-printer/v…` and taking the highest version.
-2. If that tag is newer than the running build, it streams the
-   `MunerisIpPrinter.exe` asset to `%TEMP%` in the background.
+1. On startup and every four hours, the app reads the single `ip-printer` release
+   (`https://api.github.com/repos/mbundgaard/MunerisTools/releases/tags/ip-printer`)
+   and compares its published version to the running build.
+2. If it's newer, it streams the `MunerisIpPrinter.exe` asset to `%TEMP%` in the
+   background.
 3. When the download lands, the sidebar bottom shows **Update ready!** —
    click to apply immediately, *or* just close the app whenever you would
    anyway. On the next launch the staged file is detected and swapped in
@@ -128,8 +128,8 @@ A quick tour of the design:
 - **Storage.** Settings, persisted history, and per-printer logo caches live in one file
   (`MunerisIpPrinter.bin`) under `%LOCALAPPDATA%\MunerisIpPrinter\`, organised into
   versioned slots per data type. The .exe folder stays a single portable file.
-- **Auto-update.** A hand-rolled updater checks this repo's Releases feed, filters to the
-  `ip-printer/v…` tag prefix, downloads the newest asset, and swaps it in on the next
+- **Auto-update.** A hand-rolled updater reads this tool's single rolling `ip-printer` release,
+  compares its version to the running build, downloads the asset, and swaps it in on the next
   launch — no external dependencies, no installer.
 - **Runtime.** Targets .NET Framework 4.6.2 so the same ~1 MB .exe runs on any Windows
   10+/Server 2016+ with no prerequisites.
