@@ -376,17 +376,10 @@
       </div>
     </div>
 
-    <div class="tool-switcher" id="tp-switcher"></div>
-
     <div class="tool-layout">
       <div>
-        <div class="tabs">
-          <div class="tab active" data-tab="docs" onclick="switchTab('docs')">Documentation</div>
-          <div class="tab" data-tab="changelog" onclick="switchTab('changelog')">Changelog <span class="badge" id="tp-clcount"></span></div>
-        </div>
-        <div id="panel-docs" class="md"></div>
-        <div id="panel-changelog" style="display:none"></div>
-        <div class="tool-nav" id="tp-prevnext"></div>
+        <div class="tabs" id="tp-tabs"></div>
+        <div id="tp-content"></div>
       </div>
 
       <aside class="side">
@@ -504,15 +497,10 @@ function openTool(id){
     (t.ai?`<span class="tag ai">${sparkle} AI-enabled</span>`:'')+
     (t.status!=='soon'?`<span>v${t.version}</span><span>·</span><span>updated ${t.updated}</span>`:'<span>in development</span>');
 
-  document.getElementById('panel-docs').innerHTML=t.docsHtml;
-
-  // changelog
-  document.getElementById('tp-clcount').textContent=t.changelog.length;
-  document.getElementById('panel-changelog').innerHTML=t.changelog.map(c=>`
-    <div class="cl-entry">
-      <div class="cl-ver"><span class="v">v${c.v}</span><span class="d">${c.d}</span>${c.latest?'<span class="cl-latest">latest</span>':''}</div>
-      <div class="md">${c.notesHtml||''}</div>
-    </div>`).join('');
+  // sub-page tabs — one per markdown file in the tool's docs folder, plus Changelog
+  CUR_PAGES = t.pages || [];
+  document.getElementById('tp-tabs').innerHTML = CUR_PAGES.map((p,i)=>
+    `<div class="tab ${i===0?'active':''}" data-i="${i}" onclick="switchPage(${i})">${p.title}${p.badge?` <span class="badge">${p.badge}</span>`:''}</div>`).join('');
 
   // downloads
   const dl=document.getElementById('tp-downloads');
@@ -540,34 +528,19 @@ function openTool(id){
   else {
     repoCard.style.display='';
     repoA.href='https://github.com/mbundgaard/MunerisTools/releases?q='+t.id+'&expanded=true';
-    repoA.innerHTML=
-      `<svg class="i" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.5 1.3a12 12 0 0 0-6.3 0C6.5 2.8 5.5 3.1 5.5 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg> All releases on GitHub`;
+    repoA.innerHTML=`<svg class="i" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.5 1.3a12 12 0 0 0-6.3 0C6.5 2.8 5.5 3.1 5.5 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg> All releases on GitHub`;
   }
 
-  // tool switcher (jump straight to another tool)
-  document.getElementById('tp-switcher').innerHTML=TOOLS.map(x=>`
-    <div class="tsw ${x.id===t.id?'active':''}" onclick="openTool('${x.id}')">
-      <span class="tsw-ico">${ICONS[x.icon]}</span>${x.name}
-      <span class="tsw-dot ${x.status}"></span>
-    </div>`).join('');
-
-  // prev / next
-  const idx=TOOLS.findIndex(x=>x.id===t.id);
-  const prev=TOOLS[idx-1], next=TOOLS[idx+1];
-  document.getElementById('tp-prevnext').innerHTML=
-    (prev?`<div class="tnav" onclick="openTool('${prev.id}')"><div class="dir">← Previous</div><div class="nm">${prev.name}</div></div>`:'<div class="tnav empty"></div>')+
-    (next?`<div class="tnav next" onclick="openTool('${next.id}')"><div class="dir">Next →</div><div class="nm">${next.name}</div></div>`:'<div class="tnav empty"></div>');
-
-  switchTab('docs');
+  switchPage(0);
   document.getElementById('home').style.display='none';
   document.getElementById('tool-page').style.display='block';
   window.scrollTo(0,0);
 }
 
-function switchTab(which){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===which));
-  document.getElementById('panel-docs').style.display=which==='docs'?'block':'none';
-  document.getElementById('panel-changelog').style.display=which==='changelog'?'block':'none';
+let CUR_PAGES=[];
+function switchPage(i){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active', Number(el.dataset.i)===i));
+  document.getElementById('tp-content').innerHTML = CUR_PAGES[i] ? CUR_PAGES[i].html : '';
 }
 function showHome(){
   document.getElementById('tool-page').style.display='none';
