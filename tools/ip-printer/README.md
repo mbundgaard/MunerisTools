@@ -14,7 +14,7 @@ up real hardware.
 
 ## Download & install
 
-⬇ **[Latest release](https://github.com/mbundgaard/muneris-tools/releases?q=ip-printer&expanded=true)** — download `MunerisIpPrinter.exe` from the newest `ip-printer/v…` release.
+⬇ **[Latest release](https://github.com/mbundgaard/MunerisTools/releases?q=ip-printer&expanded=true)** — download `MunerisIpPrinter.exe` from the newest `ip-printer/v…` release.
 
 Drop the `.exe` anywhere (a toolkit folder, OneDrive, the desktop) and run it. Because
 it's a single self-contained file it's happy being copied between test machines. The
