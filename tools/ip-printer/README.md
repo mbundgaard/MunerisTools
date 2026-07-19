@@ -1,75 +1,150 @@
 # Muneris IP Printer
 
-A small Windows utility that stands in for up to **fifteen ESC/POS receipt printers**
-on loopback IP addresses. Point your POS at `127.0.0.1:9100`, `127.0.0.2:9100`, … and
-every receipt that would have hit a kitchen or counter printer shows up **on screen**
-instead — handy for verifying POS configurations (e.g. Oracle Simphony) without wiring
-up real hardware.
+A small Windows utility that listens on TCP **9100** and renders every ESC/POS
+receipt on screen instead of on paper. Useful for setting up, debugging, or
+demoing a POS deployment without wiring up real thermal printers.
 
-- **Portable.** A single ~1 MB `.exe`. No installer, no admin rights.
-- **No prerequisites.** Uses .NET Framework 4.6.2, in-box on every Windows 10 /
-  Server 2016 and newer.
-- **Self-updating.** Checks for new releases on startup and every few hours, then
-  updates itself in place with one click.
+<p align="center">
+  <img src="images/Main.PNG" width="720" alt="Main window — sidebar with three printers, a rendered receipt, and the auto-update link"/>
+</p>
 
-## Download & install
+## What it's for
 
-⬇ **[Latest release](https://github.com/mbundgaard/MunerisTools/releases?q=ip-printer&expanded=true)** — download `MunerisIpPrinter.exe` from the newest `ip-printer/v…` release.
+The usual ways to test POS print output without physical printers fall short:
 
-Drop the `.exe` anywhere (a toolkit folder, OneDrive, the desktop) and run it. Because
-it's a single self-contained file it's happy being copied between test machines. The
-filename stays `MunerisIpPrinter.exe` across versions, so shortcuts keep working through
-auto-updates.
+- **Print-to-disk** routes each receipt to a flat file. You see the text, but
+  not the logo, not the QR codes, not anything graphical — and you have to
+  hunt across dozens of files to compare runs.
+- **Dragging a box of thermal printers** between sites works but is exactly
+  as fun as it sounds.
 
-## Using it
+This is the friction-free version:
 
-1. **Configure printers.** Open the hamburger menu → **Settings**. Add up to 15 logical
-   printers; each maps to a loopback address `127.0.0.1`, `127.0.0.2`, … Rename them to
-   match your POS layout (Kitchen, Bar, Expo, …).
-2. **Point your POS at them.** Set each POS printer's IP to the matching `127.0.0.X` on
-   port **9100**. Each address has its own listener, so routing is automatic and Windows
-   Firewall stays quiet (loopback-only listeners never trigger the "allow access" prompt).
-3. **Watch receipts arrive.** Each printer shows a live stack of receipts, newest on top,
-   rendered as they'd print — bold, alignment, sizing, barcodes/QR, logos, and code-page
-   text. Hover a receipt for copy buttons: **copy as text**, **copy as image**, and
-   **copy as raw hex bytes** (the exact received stream).
+- Run `MunerisIpPrinter.exe` on a workstation or test box.
+- Configure the POS as if a printer existed at `127.0.0.1:9100`,
+  `127.0.0.2:9100`, … (one logical printer per loopback IP, up to fifteen).
+- Every receipt the POS would have printed shows up in the app, fully
+  rendered — text, logos, QR codes, the lot — stacked newest-on-top per
+  printer so you can scroll through a run and compare.
 
-### Settings that matter
+Typical scenarios:
 
-- **Default code page** — used when the print stream carries no `ESC t` selector. An
-  `ESC t` in the data always overrides it. Broad `ESC t` support is built in (USA/Multilingual,
-  Cyrillic 866/1251/855, Central-European/Greek/Turkish Windows pages, and more).
-- Settings changes apply on a quick automatic restart.
+- **Verifying a new Simphony venue config** — do modifiers route to the correct
+  printer, do item names fit the paper, is the logo positioned right?
+- **Pre-flighting a printer migration** — validate the print stream against the
+  target IPs before swapping the physical printers on site.
+- **Reproducing a customer's "kitchen didn't get my modifier" ticket** — bring
+  up the venue config locally, replay the orders, see exactly what each
+  printer would have received.
 
-## Local HTTP API (port 9101)
+The .exe is a single file under 1 MB. Drop it in your toolkit folder
+(Dropbox/OneDrive/network share), copy into any Windows box, run it. No
+installer, no admin rights, no .NET runtime to install — uses the in-box
+.NET Framework 4.6.2 that ships with every Windows 10+ machine.
 
-A loopback-only HTTP API for driving receipt-design iteration (including from an AI agent):
+## Install
 
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /` | Self-describing plaintext guide (lists live printers + the send/fetch loop) |
-| `GET /printers` | List configured printers |
-| `GET /latest?printer=N` | PNG of printer N's newest receipt (paper only) |
-| `GET /latest.txt?printer=N` | Decoded receipt text |
-| `GET /latest.hex?printer=N` | Exact received bytes, space-separated hex |
-| `GET /screenshot` | PNG of the whole window |
-| `POST /clear` | Clear all receipts (or `?printer=N` for one) |
-| `POST /printers/add\|rename\|remove` | Manage printers (saves + restarts) |
+<a href="https://github.com/mbundgaard/MunerisTools/releases?q=ip-printer&expanded=true"><img src="https://img.shields.io/badge/Download-MunerisIpPrinter.exe-3A6FB8?style=for-the-badge" alt="Download MunerisIpPrinter.exe"/></a>
 
-`printer=N` is the loopback last octet (1-based). The hamburger menu's **Copy AI prompt**
-item copies a seed prompt pointing an agent at `http://127.0.0.1:9101/` to self-discover
-the rest.
+Releases are published under the `ip-printer/v…` tag prefix — grab
+`MunerisIpPrinter.exe` from the [newest one](https://github.com/mbundgaard/MunerisTools/releases?q=ip-printer&expanded=true).
+Run it once; the app self-registers nothing — all state lives in
+`%LOCALAPPDATA%\MunerisIpPrinter\` so the .exe folder stays a single portable
+file.
 
-## Updating
+After the first launch the app checks for newer releases every four hours and
+downloads them in the background. The next time you close and reopen the app,
+the new build takes over automatically. See [Auto-update](#auto-update) for details.
 
-The app checks this repo's Releases feed on startup and every 4 hours. When a newer
-`ip-printer/v…` release exists it downloads in the background; the sidebar then shows
-**Update ready!** — click to install and relaunch (or it applies automatically on the
-next launch). No installer, no admin prompt.
+## Configure
 
-## Versions
+Open the hamburger menu in the bottom-left of the sidebar and pick **Settings**.
 
-CalVer — `yyyy.M.d.build` (e.g. `2026.7.14.28`). See the full [Changelog](CHANGELOG.md).
+<p align="center">
+  <img src="images/Settings.PNG" width="540" alt="Settings dialog with three printers and a history setting"/>
+</p>
+
+- **Printers** — add up to 15. Each entry is automatically assigned the next
+  loopback address (`127.0.0.1`, `127.0.0.2`, …) on port 9100. Use exactly that
+  address in the POS printer record.
+- **Keep the last N prints per printer** — set above 0 to persist receipts
+  between sessions; 0 means in-memory only.
+- **Enable logging** — opt-in. Dumps raw request/response bytes plus a
+  `debug.log` to `%LOCALAPPDATA%\MunerisIpPrinter\logs\` for diagnostics.
+
+Settings changes apply after a restart; the app offers to restart for you when
+you save. You can rename a printer at any time by hovering its sidebar row and
+clicking the pencil — renames are persisted immediately, no restart needed.
+
+## Features
+
+- **Up to 15 printers** on loopback IPs, each with its own scrollable history
+  of receipts (newest on top).
+- **Accurate ESC/POS decode** — codepage switches (`ESC t`), text, formatting,
+  and `GS *` downloaded bit-image logos.
+- **Per-receipt copy** — small hover-revealed icons above each rendered
+  receipt. Copy as plain text (for pasting into a ticket comment) or as an
+  image. The image is placed on the clipboard as both `CF_BITMAP` and `PNG`,
+  so Slack, Discord, Word, and browsers all paste correctly.
+- **New-print badge** — sidebar shows a count badge on any printer that's
+  received receipts while you weren't looking; clears when you select it.
+- **Resizable sidebar** — width is remembered across launches.
+- **`GET http://localhost:9101/screenshot`** returns a PNG of the current
+  window. Useful for embedding into dashboards or attaching to bug reports.
+- **Auto-update from GitHub Releases** (see below).
+
+## Auto-update
+
+The mechanism, end to end:
+
+1. On startup and every four hours, the app polls
+   `https://api.github.com/repos/mbundgaard/MunerisTools/releases`, keeping only
+   releases tagged `ip-printer/v…` and taking the highest version.
+2. If that tag is newer than the running build, it streams the
+   `MunerisIpPrinter.exe` asset to `%TEMP%` in the background.
+3. When the download lands, the sidebar bottom shows **Update ready!** —
+   click to apply immediately, *or* just close the app whenever you would
+   anyway. On the next launch the staged file is detected and swapped in
+   before any TCP port is bound.
+
+The swap is a `Move-Item` over whatever the running exe is named, so any
+shortcut you have keeps working through updates — only the file contents
+change, the path doesn't.
+
+If you'd rather check manually, the **Check for updates** entry in the
+hamburger menu runs the same flow and reports "you're on the latest" otherwise.
+
+## How it works
+
+A quick tour of the design:
+
+- **Listener.** One socket is bound per configured `127.0.0.X` address. Loopback-only
+  listeners don't trigger Windows Defender Firewall. A retry loop on bind handles the
+  brief window during a restart where the prior instance is still releasing the port.
+- **ESC/POS parsing.** The byte stream is walked to emit events for cuts (`GS V`),
+  responses to status queries, and logo definitions (`GS *`); receipts are split at cuts.
+  Visible text is decoded honoring code-page-switch commands, and `GS * x y data` bit
+  images decode to on-screen bitmaps.
+- **Storage.** Settings, persisted history, and per-printer logo caches live in one file
+  (`MunerisIpPrinter.bin`) under `%LOCALAPPDATA%\MunerisIpPrinter\`, organised into
+  versioned slots per data type. The .exe folder stays a single portable file.
+- **Auto-update.** A hand-rolled updater checks this repo's Releases feed, filters to the
+  `ip-printer/v…` tag prefix, downloads the newest asset, and swaps it in on the next
+  launch — no external dependencies, no installer.
+- **Runtime.** Targets .NET Framework 4.6.2 so the same ~1 MB .exe runs on any Windows
+  10+/Server 2016+ with no prerequisites.
+
+## About
+
+<p align="center">
+  <img src="images/About.PNG" width="380" alt="About dialog"/>
+</p>
+
+Built and maintained by **[Muneris](https://muneris.dk)** — software
+development and consulting for hospitality POS systems.
+
+Comments, bug reports, suggestions: **[support@muneris.dk](mailto:support@muneris.dk)**
+or [open an issue](https://github.com/mbundgaard/MunerisTools/issues).
 
 ## License
 
