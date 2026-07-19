@@ -1,0 +1,7 @@
+{
+  "name": "IqueryCLI",
+  "icon": "sync",
+  "ai": true,
+  "description": "Query and export data from Oracle Simphony Reporting & Analytics on the command line.",
+  "order": 6
+}

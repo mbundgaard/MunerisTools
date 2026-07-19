@@ -1,0 +1,16 @@
+{
+  "name": "IP Printer",
+  "icon": "printer",
+  "ai": true,
+  "description": "Stand in for up to 15 ESC/POS receipt printers on loopback IPs — receipts render on screen instead of paper.",
+  "order": 1,
+  "runtime": ".NET Framework 4.6.2",
+  "license": "MIT",
+  "asset": "MunerisIpPrinter.exe",
+  "release": {
+    "version": "28",
+    "date": "2026-07-19",
+    "size": "1010 KB",
+    "url": "https://github.com/mbundgaard/MunerisTools/releases/download/ip-printer/v28/MunerisIpPrinter.exe"
+  }
+}

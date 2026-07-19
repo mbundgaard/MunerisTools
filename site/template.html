@@ -426,7 +426,7 @@ function renderGrid(){
         <span class="tag ${t.status}">${STATUS_LABEL[t.status]}</span>
       </div>
       <h3>${t.name}</h3>
-      <div class="desc">${t.short}</div>
+      <div class="desc">${t.description}</div>
       ${t.ai?`<div class="ai-pill">${sparkle} AI-enabled · agent-drivable</div>`:''}
       <div class="card-foot">
         <span>${t.status==='soon'?'in development':'v'+t.version}</span>
@@ -491,7 +491,7 @@ function openTool(id){
   const t=TOOLS.find(x=>x.id===id); if(!t)return;
   document.getElementById('tp-ico').innerHTML=ICONS[t.icon];
   document.getElementById('tp-name').textContent=t.name;
-  document.getElementById('tp-lede').textContent=t.lede;
+  document.getElementById('tp-lede').textContent=t.description;
   document.getElementById('tp-meta').innerHTML=
     `<span class="tag ${t.status}">${STATUS_LABEL[t.status]}</span>`+
     (t.ai?`<span class="tag ai">${sparkle} AI-enabled</span>`:'')+

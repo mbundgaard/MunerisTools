@@ -1,0 +1,7 @@
+{
+  "name": "Open Check Viewer",
+  "icon": "gauge",
+  "ai": false,
+  "description": "See open checks from the legacy Simphony API, in the raw Simphony XML format.",
+  "order": 5
+}

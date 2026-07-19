@@ -1,0 +1,7 @@
+{
+  "name": "StsCLI",
+  "icon": "terminal",
+  "ai": true,
+  "description": "Command-line client for the Simphony Transaction Service API — authorize, list checks, post checks.",
+  "order": 4
+}
