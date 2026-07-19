@@ -1,0 +1,4 @@
+[
+  { "slug": "ip-printer", "name": "IP Printer", "asset": "MunerisIpPrinter.exe",
+    "tagline": "Stand in for up to 15 ESC/POS receipt printers on loopback IPs — print to screen, not paper." }
+]
