@@ -1,0 +1,10 @@
+{
+  "name": "KDS Multi-Display",
+  "icon": "kds",
+  "ai": false,
+  "description": "Run several Muneris KDS display stations from one screen — each on its own loopback endpoint — for multi-station setups, testing and demos.",
+  "order": 2,
+  "runtime": ".NET 10 Desktop Runtime",
+  "license": "Proprietary",
+  "asset": "MunerisKdsMultiDisplay.exe"
+}
