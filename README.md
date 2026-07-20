@@ -135,8 +135,11 @@ Keep the tool's public docs in a top-level **`tool/`** folder in that repo (`too
   `publish-docs.ps1` + push. Change the build step and the `<slug>` in the gate/commit, then add a
   **secret `GH_PAT`** variable (classic PAT, `repo` scope) in the ADO pipeline.
 
-On every push to `main` the pipeline skips if `<slug>/v<n>` already exists, else builds → creates the
-release + writes `release.json` → mirrors `tool/` here. That commit triggers this repo's Pages build.
+On every push to `main` the pipeline **mirrors `tool/` (docs, screenshots, `tool.json`) to the site** —
+so doc and screenshot fixes ship without a version bump. If the build number is new it *also* builds the
+binary, cuts the `<slug>/v<n>` release, and refreshes `release.json`. Either way the commit into this
+repo triggers the Pages build. (`release.json` is owned by the site side; the mirror never overwrites it
+except when a release is cut.)
 
 ### B. Small tool, no pipeline (author directly here)
 
