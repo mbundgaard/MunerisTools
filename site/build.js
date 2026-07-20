@@ -66,7 +66,7 @@ function galleryTab(dir, slug) {
   const figs = files.map(f => {
     copyFileSync(join(srcDir, f), join(outDir, f));
     const cap = escHtml(shotCaption(f));
-    return `<figure class="shot" onclick="openShot(this)"><img loading="lazy" src="${slug}/screenshots/${f}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+    return `<figure class="shot" onclick="openShot(this)"><img loading="lazy" src="${slug}/screenshots/${f}" alt="${cap}"></figure>`;
   }).join('');
   return { title: 'Screenshots', html: `<div class="gallery">${figs}</div>` };
 }
