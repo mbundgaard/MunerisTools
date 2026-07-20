@@ -11,8 +11,8 @@ releases live here.
 - **`site/tools/<slug>/`** — one self-describing folder per tool. This is the content you edit.
 - **`site/`** — the static-site generator (`build.js`, a small Node build) and `template.html`.
   It reads the tool folders and writes `site/_site/`.
-- **`.github/workflows/pages.yml`** — builds and deploys the site to GitHub Pages on every
-  release and on pushes under `site/**`.
+- **`.github/workflows/pages.yml`** — builds and deploys the site to GitHub Pages on pushes under
+  `site/**` (the publish pipeline's `release.json` commit lands there, so releases deploy too).
 
 The site is generated. Never hand-edit `site/_site/`.
 
@@ -116,23 +116,43 @@ enlarge. Nothing to register.
 
 ## Adding a new tool
 
-Choose where the folder is authored:
+Pick a **slug** — lowercase-kebab (`ip-printer`, `sim-cli`). It must be identical everywhere: the
+`site/tools/<slug>/` folder, the release tag prefix `<slug>/v<n>`, and the tool's auto-update config.
+`<n>` is a monotonic build number (for the .NET tools it's the 4th component of the CalVer version).
 
-- **The tool has its own private source repo** (the normal case, e.g. `MunerisIpPrinter`) — keep its
-  public docs in a top-level **`tool/`** folder there (`tool.json`, `README.md`, `CHANGELOG.md`, …).
-  Its release pipeline then:
-  1. creates the `<slug>/v<n>` GitHub release with the binary attached,
-  2. writes `tool/release.json`,
-  3. mirrors `tool/` → this repo's `site/tools/<slug>/`.
+Then choose how the folder is produced:
 
-  See `MunerisIpPrinter` (`publish-release.ps1`, `publish-docs.ps1`, `azure-pipelines.yml`) for the
-  reference wiring.
+### A. Tool with its own private source repo (the normal path)
 
-- **A small tool authored directly here** — create `site/tools/<slug>/` with a `tool.json` and at
-  least a `README.md`. Leave `release.json` to the pipeline, or omit it to list as Coming soon.
+Keep the tool's public docs in a top-level **`tool/`** folder in that repo (`tool.json`, `README.md`,
+`CHANGELOG.md`, optional `QUICK-START.md` and `screenshots/`). Copy the release wiring from
+`MunerisIpPrinter` and change a few values:
 
-The **slug** must match everywhere: the `site/tools/<slug>/` folder name, the release tag prefix
-`<slug>/v<n>`, and the tool's own auto-update configuration.
+- **`publish-release.ps1`** — builds the `<slug>/v<n>` release from the binary and writes
+  `tool/release.json`. Change `$Slug`, the release title, and the asset name.
+- **`publish-docs.ps1`** — mirrors `tool/` → `MunerisTools/site/tools/<slug>/`. Change `$Slug`.
+- **`azure-pipelines.yml`** — bump-gate → build → `publish-release.ps1` → clone MunerisTools +
+  `publish-docs.ps1` + push. Change the build step and the `<slug>` in the gate/commit, then add a
+  **secret `GH_PAT`** variable (classic PAT, `repo` scope) in the ADO pipeline.
+
+On every push to `main` the pipeline skips if `<slug>/v<n>` already exists, else builds → creates the
+release + writes `release.json` → mirrors `tool/` here. That commit triggers this repo's Pages build.
+
+### B. Small tool, no pipeline (author directly here)
+
+Create `site/tools/<slug>/` with a `tool.json` and at least a `README.md`. To publish a build by hand:
+
+1. Create the release + attach the binary
+   `gh release create <slug>/v<n> <binary> --repo mbundgaard/MunerisTools --title "<Name> v<n>"`
+2. Add `site/tools/<slug>/release.json` (`version`, `date`, `size`, `url` — see the schema above).
+3. Commit + push — the Pages build regenerates the site.
+
+Omit `release.json` to list the tool as **Coming soon**.
+
+## Icons
+
+`icon` must be one of the built-in set: `printer · terminal · kds · sync · gauge · key`. To add a new
+one, add its SVG under a new key to the `ICONS` map in **`site/template.html`**.
 
 ## Releases & auto-update
 
