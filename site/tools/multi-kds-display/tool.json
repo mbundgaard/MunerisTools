@@ -1,7 +1,0 @@
-{
-  "name": "Multi-KDS Display",
-  "icon": "kds",
-  "ai": false,
-  "description": "Host many kitchen-display screens in one app — no more spinning up a VM per screen.",
-  "order": 3
-}
