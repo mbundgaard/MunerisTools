@@ -27,6 +27,7 @@ A tool is a folder `site/tools/<slug>/` containing:
 | `tool.json` | you (human or agent) | The frame — name, icon, description, runtime, etc. |
 | `release.json` | the release pipeline | Latest build's version / date / size / download url. |
 | `*.md` | you | One documentation tab per file (`README.md`, `QUICK-START.md`, `CHANGELOG.md`, …). |
+| `screenshots/` *(optional)* | you | Images here become an auto **Screenshots** gallery tab (always last). |
 
 The generator discovers **every folder under `site/tools/` that contains a `tool.json`** — one
 home-page card and one detail page per folder. There is no central registry: add a folder and it
@@ -98,6 +99,18 @@ headings and typed bullets:
 
 `add` / `fix` / `chg` become coloured chips; the `v28 — 2026-07-14` header renders as the version
 over a small muted date.
+
+### Screenshots (optional) — a `screenshots/` folder
+
+Drop images (`.png`, `.jpg`, `.gif`, `.webp`, `.avif`) into a **`screenshots/`** subfolder and a
+**Screenshots** tab appears automatically as the **last** tab — a responsive gallery, tap any image to
+enlarge. Nothing to register.
+
+- **Order + caption come from the filename**, same convention-over-config idea as the `.md` frontmatter.
+  `01-settings-dialog.png` sorts first and captions as *"Settings dialog"* (a leading `NN-` is stripped,
+  `-`/`_` become spaces).
+- Images are **copied** into the site (`/<slug>/screenshots/…`) and lazy-loaded — they are not inlined,
+  so the page stays light. Keep them reasonably sized (they display ~2-up).
 
 ---
 

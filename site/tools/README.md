@@ -54,6 +54,12 @@ order: 1
 Keep the changelog as `CHANGELOG.md` (`order: 100`). Use `## v28 — 2026-07-14` version headings and
 `- add:` / `- fix:` / `- chg:` typed bullets so the version headers and change chips render.
 
+## Screenshots (optional)
+
+Add a `screenshots/` subfolder of images and a **Screenshots** gallery tab appears automatically as the
+last tab (tap to enlarge). Order + captions come from the filename: `01-settings-dialog.png` → sorts
+first, captioned "Settings dialog". Images are copied into the site and lazy-loaded, not inlined.
+
 ## Add a tool
 
 Create `site/tools/<slug>/` with a `tool.json` and at least one `.md`. Done — the generator does the rest.

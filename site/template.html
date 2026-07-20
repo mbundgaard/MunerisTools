@@ -219,6 +219,18 @@
   .dl-none{font-size:13px;color:var(--dim);margin-top:16px}
   .dl-none a{color:var(--accent)}
 
+  /* screenshots gallery */
+  .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:560px){.gallery{grid-template-columns:1fr}}
+  .shot{border:1px solid var(--border);background:var(--panel);box-shadow:var(--card-shadow);overflow:hidden;cursor:zoom-in;transition:.15s}
+  .shot:hover{border-color:var(--border-hi);box-shadow:var(--card-shadow-hi)}
+  .shot img{display:block;width:100%;height:auto;background:var(--panel-2)}
+  .shot figcaption{font-size:12.5px;color:var(--muted);padding:10px 12px;border-top:1px solid var(--border)}
+  .lightbox{display:none;position:fixed;inset:0;z-index:100;background:rgba(20,25,32,.9);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:92vw;max-height:82vh;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .lightbox .cap{font-family:var(--mono);font-size:13px;color:#e8e4d8}
+
   svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
@@ -340,6 +352,12 @@
   </div>
 </main>
 
+<!-- screenshot lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeShot()">
+  <img id="lightbox-img" alt="">
+  <div class="cap" id="lightbox-cap"></div>
+</div>
+
 <script>
 /* ---------- icons ---------- */
 const ICONS = {
@@ -423,6 +441,18 @@ function showHome(){
   document.getElementById('home').style.display='block';
   window.scrollTo(0,0);
 }
+
+/* ---------- screenshot lightbox ---------- */
+function openShot(fig){
+  const img=fig.querySelector('img');
+  document.getElementById('lightbox-img').src=img.currentSrc||img.src;
+  document.getElementById('lightbox-img').alt=img.alt;
+  document.getElementById('lightbox-cap').textContent=img.alt;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeShot(){ document.getElementById('lightbox').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeShot(); });
+
 renderGrid();
 (function(){const h=location.hash.replace(/^#/,''); if(h && TOOLS.find(t=>t.id===h)) openTool(h);})();
 </script>

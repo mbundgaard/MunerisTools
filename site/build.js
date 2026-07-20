@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync, mkdirSync, writeFileSync, rmSync, copyFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
@@ -43,6 +43,34 @@ export function docPages(dir) {
 // Parse a JSON file, tolerating a leading UTF-8 BOM (PowerShell's Set-Content -Encoding UTF8 adds one).
 const readJSON = p => JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
 
+const IMG_RE = /\.(png|jpe?g|gif|webp|avif)$/i;
+const escHtml = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// "01-settings-dialog.png" → "Settings dialog" (strip a leading NN- ordering prefix and the extension).
+function shotCaption(file) {
+  const base = file.replace(/\.[^.]+$/, '').replace(/^\d+[-_ ]*/, '').replace(/[-_]+/g, ' ').trim();
+  return base ? base.charAt(0).toUpperCase() + base.slice(1) : file;
+}
+
+// If tools/<slug>/screenshots/ holds images, copy them into _site/<slug>/screenshots/ and return a
+// Screenshots gallery tab (appended after the .md pages, so it is always the last tab). Images are
+// copied — not inlined — so index.html stays small and they lazy-load. Order + caption come from the
+// filename (sorted; `NN-caption.ext`), the same "convention over config" idea as the .md frontmatter.
+function galleryTab(dir, slug) {
+  const srcDir = join(dir, 'screenshots');
+  if (!existsSync(srcDir)) return null;
+  const files = readdirSync(srcDir).filter(f => IMG_RE.test(f)).sort();
+  if (!files.length) return null;
+  const outDir = join(OUT, slug, 'screenshots');
+  mkdirSync(outDir, { recursive: true });
+  const figs = files.map(f => {
+    copyFileSync(join(srcDir, f), join(outDir, f));
+    const cap = escHtml(shotCaption(f));
+    return `<figure class="shot" onclick="openShot(this)"><img loading="lazy" src="${slug}/screenshots/${f}" alt="${cap}"><figcaption>${cap}</figcaption></figure>`;
+  }).join('');
+  return { title: 'Screenshots', html: `<div class="gallery">${figs}</div>` };
+}
+
 function main() {
   // Discover tools: every folder under tools/ that has a tool.json.
   const slugs = readdirSync(TOOLS_DIR).filter(s => existsSync(join(TOOLS_DIR, s, 'tool.json')));
@@ -66,6 +94,10 @@ function main() {
       }, null, 2));
     }
 
+    const pages = docPages(dir);
+    const gallery = galleryTab(dir, slug);   // Screenshots tab, always last
+    if (gallery) pages.push(gallery);
+
     return {
       id: slug, name: tj.name, icon: tj.icon, ai: !!tj.ai, description: tj.description,
       order: tj.order ?? 999, status,
@@ -74,7 +106,7 @@ function main() {
       updated: rel ? rel.date : '—',
       size: rel ? (rel.size || '—') : '—',
       downloads: rel && rel.url ? [{ t: 'Windows — portable .exe', sub: tj.asset || 'download', url: rel.url }] : [],
-      pages: docPages(dir)
+      pages
     };
   }).sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 
