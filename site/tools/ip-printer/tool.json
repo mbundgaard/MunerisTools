@@ -2,6 +2,7 @@
   "name": "IP Printer",
   "icon": "printer",
   "ai": true,
+  "features": ["AI-enabled", "Auto-update"],
   "description": "Stand in for up to 15 ESC/POS receipt printers on loopback IPs — receipts render on screen instead of paper.",
   "order": 1,
   "runtime": ".NET Framework 4.6.2",

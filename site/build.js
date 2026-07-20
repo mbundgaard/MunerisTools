@@ -99,7 +99,9 @@ function main() {
     if (gallery) pages.push(gallery);
 
     return {
-      id: slug, name: tj.name, icon: tj.icon, ai: !!tj.ai, description: tj.description,
+      id: slug, name: tj.name, icon: tj.icon, ai: !!tj.ai,
+      features: Array.isArray(tj.features) ? tj.features : [],
+      description: tj.description,
       order: tj.order ?? 999, status,
       runtime: tj.runtime || '.NET', license: tj.license || 'Free',
       version: rel ? rel.version : '—',

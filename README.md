@@ -40,6 +40,7 @@ appears; a folder without `release.json` renders as **Coming soon** (no download
   "name": "IP Printer",
   "icon": "printer",
   "ai": true,
+  "features": ["AI-enabled", "Auto-update"],
   "description": "One line — used on the card AND as the detail-page subtitle.",
   "order": 1,
   "runtime": ".NET Framework 4.6.2",
@@ -49,7 +50,11 @@ appears; a folder without `release.json` renders as **Coming soon** (no download
 ```
 
 - **`icon`** — one of: `printer` · `terminal` · `kds` · `sync` · `gauge` · `key`.
-- **`ai`** — `true` adds the *"AI · agent-drivable"* label on the card and page.
+- **`ai`** — `true` adds the *"AI-enabled"* label on the detail page (and the *"AI · agent-drivable"*
+  fallback on the card when `features` is omitted).
+- **`features`** *(optional)* — a short list of notable-feature chips shown at the bottom of the card
+  (e.g. `["AI-enabled", "Auto-update"]`). When present it replaces the default AI pill; keep it to
+  2–3 short items.
 - **`description`** — a single line, reused on the card and the page header (there is only one).
 - **`order`** — card sort order, ascending; ties break alphabetically.
 - **`asset`** — the release asset's filename, shown under the Download button.

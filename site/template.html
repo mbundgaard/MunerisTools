@@ -115,6 +115,9 @@
   .tag.soon::before{background:transparent;border:1px solid var(--dim)}
   .ai-pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px}
   .ai-pill b{color:var(--accent);font-weight:600;letter-spacing:.04em}
+  /* notable-features row on the card (from tool.json "features") */
+  .feats{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .feat{font-family:var(--mono);font-size:10.5px;color:var(--accent);border:1px solid var(--border-hi);padding:2px 8px;letter-spacing:.02em;white-space:nowrap}
   .card h3{font-size:17px;font-weight:600;letter-spacing:-.01em}
   .card .desc{color:var(--muted);font-size:13.5px;margin-top:7px;flex:1}
   .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
@@ -382,7 +385,9 @@ function renderGrid(){
       </div>
       <h3>${t.name}</h3>
       <div class="desc">${t.description}</div>
-      ${t.ai?`<div class="ai-pill"><b>AI</b> · agent-drivable</div>`:''}
+      ${t.features&&t.features.length
+        ?`<div class="feats">${t.features.map(f=>`<span class="feat">${f}</span>`).join('')}</div>`
+        :(t.ai?`<div class="ai-pill"><b>AI</b> · agent-drivable</div>`:'')}
       <div class="card-foot">
         <span>${t.status==='soon'?'in development':'v'+t.version}</span>
         <span class="card-arrow">

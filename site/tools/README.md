@@ -19,6 +19,7 @@ Each folder holds:
   "name": "IP Printer",
   "icon": "printer",                       // printer | terminal | kds | sync | gauge | key
   "ai": true,
+  "features": ["AI-enabled", "Auto-update"],  // optional: notable-feature chips on the card
   "description": "One line — shown on the card AND as the detail-page subtitle.",
   "order": 1,                              // card sort order (ascending); ties break alphabetically
   "runtime": ".NET Framework 4.6.2",
