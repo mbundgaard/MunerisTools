@@ -3,6 +3,10 @@ title: Changelog
 order: 100
 ---
 
+## v30 — 2026-07-20
+- add: Collapsible printer sidebar — a chevron in the header folds the list down to a thin rail (hamburger menu still reachable); the fold state is remembered across restarts.
+- chg: Sidebar shows the short release number (e.g. `v30`) instead of the full CalVer version.
+
 ## v29 — 2026-07-19
 - chg: Maintenance build — no functional changes; validates the automated release pipeline.
 
