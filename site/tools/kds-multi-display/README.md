@@ -8,6 +8,9 @@ order: 2
 
 It runs the **real** display engine and wire protocol — the same code the single-station display ships — so what you see on a station here is what the kitchen sees in production. It's a portable `.exe` (needs the .NET 10 Desktop Runtime); no installer.
 
+## Part of a larger solution
+KDS Multi-Display is one piece of the **custom Kitchen Display System Muneris builds for Oracle Simphony** — a from-scratch KDS display plus a service tier that runs in-process with Simphony to drive it: order routing to stations, on-screen assembly chits, runner/label printing, and per-station configuration from EMC. This host runs that same production display engine, just many stations in one window. If you run Simphony and want a modern KDS tailored to your kitchen — beyond what this free tool does on its own — that's the solution Muneris delivers as an engagement.
+
 ## What it's for
 - **Multi-station setups on one screen** — Prep, Expo, Drive-Thru side by side without a monitor per station.
 - **Testing & demos** — drive a whole kitchen's worth of displays from a KDS Controller (or Simphony's virtual KDS) against loopback, with no hardware.
