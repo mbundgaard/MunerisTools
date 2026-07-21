@@ -5,7 +5,7 @@ order: 100
 
 ## v31 — 2026-07-22
 - fix: Text with em-dashes, arrows and other non-ASCII characters displayed as mojibake (`â€"`). The compiler was reading our BOM-less UTF-8 sources as Windows-1252, so the corruption was baked into the app at build time — 21 strings were affected.
-- fix: Release notes published to GitHub had the same corruption, for the same reason on the build agent.
+- fix: Published release notes had the same corruption, for the same reason in the publish step.
 
 ## v30 — 2026-07-20
 - add: Collapsible printer sidebar — a chevron in the header folds the list down to a thin rail (hamburger menu still reachable); the fold state is remembered across restarts.
