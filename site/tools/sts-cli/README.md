@@ -27,5 +27,16 @@ Every command emits **one JSON envelope on stdout**; human/diagnostic logs go to
 ## Cloud vs local
 Reads and checks target the **cloud STS** by default. For a property whose Simphony is on the **local hub**, add `--local-sts-ip <ip>` to send that one call to its on-prem STS. `sts connection status --location <loc> --rvc <rvc>` tells you where a property is live.
 
+## Which build am I on?
+`sts version` reads the version out of the exe and prints it as JSON (`v2`, plus the full assembly version and the commit) — **no network**, so it works offline and on a locked-down POS network. Add `--check` to compare against the latest published build:
+```
+sts version              # local only
+sts version --check      # adds latest, upToDate and the download URL
+```
+`--check` is the **only** call StsCLI makes to Muneris, and only to compare build numbers. If it can't reach the feed it still reports your local version rather than failing.
+
 ## Drive it with an AI agent
 StsCLI is agent-first: a stable JSON schema, a branchable exit-code taxonomy, and structured self-correcting errors (the **full STS response body is surfaced verbatim**, so an agent sees exactly what went wrong). `sts endpoints` lists every read; for the write side, **`sts check example`** prints a ready-to-fill request body with the rules baked in (which tender settles vs. fires, what the CLI fills for you) — the agent adapts a concrete example instead of guessing a schema.
+
+## Feedback
+StsCLI comes from **Muneris** — [tools.muneris.cloud](https://tools.muneris.cloud/#sts-cli). It's built to be driven by an AI and to grow with use, so if a verb or flag could be clearer, or is missing, say so: **support@muneris.dk**. Include the command you ran, the JSON envelope it returned, and the exit code.

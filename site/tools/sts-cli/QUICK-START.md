@@ -23,3 +23,7 @@ order: 1
    ```
 
 Run `sts endpoints` to list every read command, and `sts <cmd> --help` for full details on any of them.
+
+**Check your build:** `sts version` (offline) or `sts version --check` to see whether a newer one has been published.
+
+**Feedback:** StsCLI comes from Muneris — [tools.muneris.cloud](https://tools.muneris.cloud/#sts-cli). Send suggestions or problems to **support@muneris.dk** with the command, the JSON envelope, and the exit code.

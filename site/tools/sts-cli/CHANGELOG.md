@@ -3,6 +3,12 @@ title: Changelog
 order: 100
 ---
 
+## v3 — 2026-07-22
+- New `sts version`: reports this build as JSON (`v3`, the full assembly version, and the commit), read from the exe — no network, so it works offline and on a locked-down POS network.
+- `sts version --check` compares against the published build and returns `latest`, `upToDate` and the download URL. It is the only call StsCLI makes to Muneris, it is opt-in, and if the feed is unreachable it still reports your local version instead of failing.
+- Root `--help` now says where the tool comes from (tools.muneris.cloud) and where to send feedback (support@muneris.dk), and is explicit that nothing is phoned home unless you ask.
+- Fixed: release notes and CLI text mangled non-ASCII (em-dashes appearing as `â€"`). The compiler was reading our BOM-less UTF-8 sources as CP1252.
+
 ## v2 — 2026-07-21
 - `check list` gains the STS server-side filters: `--check-number` (one or more, comma-separated), `--since-time`, `--order-type`, `--employee`, `--table`. Finding a closed check by its check number no longer needs the `checkRef`.
 - `--since-time` accepts a bare date (`2026-07-21` → `2026-07-21T00:00Z`).
