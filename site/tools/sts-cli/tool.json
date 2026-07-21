@@ -2,6 +2,10 @@
   "name": "StsCLI",
   "icon": "terminal",
   "ai": true,
-  "description": "Command-line client for the Simphony Transaction Service API — authorize, list checks, post checks.",
-  "order": 4
+  "features": ["AI-enabled", "Self-documenting"],
+  "description": "Command-line client for Oracle Simphony Transaction Services (STS) — log in, read config, and price/post/settle/void checks.",
+  "order": 4,
+  "runtime": ".NET 10",
+  "license": "MIT",
+  "asset": "sts.exe"
 }
