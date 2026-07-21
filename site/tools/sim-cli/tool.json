@@ -1,7 +1,7 @@
 {
   "name": "SimCLI",
   "icon": "terminal",
-  "ai": true,
+  "features": ["AI-enabled"],
   "description": "Drive the Simphony client from the command line — log in, order items, press buttons, restart.",
   "order": 2
 }

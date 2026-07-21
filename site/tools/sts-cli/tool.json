@@ -1,7 +1,6 @@
 {
   "name": "StsCLI",
   "icon": "terminal",
-  "ai": true,
   "features": ["AI-enabled", "Self-documenting"],
   "description": "Command-line client for Oracle Simphony Transaction Services (STS) — log in, read config, and price/post/settle/void checks.",
   "order": 4,

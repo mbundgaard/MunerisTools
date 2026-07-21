@@ -99,7 +99,7 @@ function main() {
     if (gallery) pages.push(gallery);
 
     return {
-      id: slug, name: tj.name, icon: tj.icon, ai: !!tj.ai,
+      id: slug, name: tj.name, icon: tj.icon,
       features: Array.isArray(tj.features) ? tj.features : [],
       description: tj.description,
       order: tj.order ?? 999, status,
