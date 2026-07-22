@@ -1,7 +1,10 @@
 {
   "name": "SimCLI",
   "icon": "terminal",
-  "features": ["AI-enabled"],
+  "features": ["AI-enabled", "Self-documenting"],
   "description": "Drive the Simphony client from the command line — log in, order items, press buttons, restart.",
-  "order": 2
+  "order": 3,
+  "runtime": ".NET 10 Desktop Runtime",
+  "license": "MIT",
+  "asset": "sim.exe"
 }
