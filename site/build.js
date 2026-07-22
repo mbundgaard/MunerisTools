@@ -138,19 +138,26 @@ ${listed}
 
 ## Per-tool files
 
-Every tool publishes these four files at \`${SITE}/{slug}/…\` — substitute a slug from the list
+Every tool publishes these three files at \`${SITE}/{slug}/…\` — substitute a slug from the list
 above. They are the tool's own files, served verbatim:
 
-- \`release.json\` — **the latest build**: \`{ version, date, size, url }\`. This is the file to
-  read when checking for an update: compare \`version\` with the build the user is running;
-  \`url\` is the direct download. **Absent (404) until a tool's first release** — that is how you
-  tell "not released yet" from "no such tool" (whose \`tool.json\` would be missing too).
 - \`tool.json\` — the frame: \`{ name, icon, features, description, runtime, license, asset }\`.
 - \`README.md\` — what the tool does and how it is used.
 - \`CHANGELOG.md\` — version history, newest first. Appears once a tool has releases.
 
 A tool may also publish other markdown pages (a quick start, notes, …); they are rendered on
-its page on the site. The four above are the contract you can rely on.
+its page on the site. The three above are the contract you can rely on.
+
+## Downloading and update checks
+
+A released tool also publishes \`${SITE}/{slug}/release.json\` — written by its release pipeline,
+not hand-authored like the three files above:
+
+    { "version": "…", "date": "…", "size": "…", "url": "…" }
+
+Read it to download a tool or check for updates: compare \`version\` with the build the user is
+running; \`url\` is the direct download. **Absent (404) until a tool's first release** — that is
+how you tell "not released yet" from "no such tool" (whose \`tool.json\` would be missing too).
 
 Example: ${url('sts-cli', 'release.json')}
 

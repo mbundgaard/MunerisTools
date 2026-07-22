@@ -6,18 +6,19 @@ add a folder and it appears.
 
 > Full guide (schema, changelog formatting, how releases wire up): see the repo root `README.md`.
 
-**Four files are required** — they are the published contract, served verbatim at
+**Three files are required** — they are the published contract, served verbatim at
 `https://tools.muneris.cloud/<slug>/…` and described in
 [`llms.txt`](https://tools.muneris.cloud/llms.txt) so an AI agent can find and use the tool:
 
-- **`tool.json`** — the frame (human-authored).
-- **`release.json`** — latest build, written by the publish pipeline. **The file an updater reads.**
-  Absent → **Coming soon** (no download), and the URL 404s.
+- **`tool.json`** — the frame.
 - **`README.md`** — what the tool does and how it is used.
 - **`CHANGELOG.md`** — version history, newest first; the newest section becomes the release notes.
 
 **Any number of further `.md` files may be added** (`QUICK-START.md`, notes, …). Each becomes a
-documentation tab and is published — they are just not part of the four-file contract.
+documentation tab and is published — they are just not part of the three-file contract.
+
+Until the tool's first release it lists as **Coming soon**, with no download. The release pipeline
+flips that over on its own — nothing for you to add.
 
 ## `tool.json`
 
@@ -31,17 +32,6 @@ documentation tab and is published — they are just not part of the four-file c
   "runtime": ".NET Framework 4.6.2",
   "license": "MIT",
   "asset": "MunerisIpPrinter.exe"          // release asset filename, shown under Download
-}
-```
-
-## `release.json` (pipeline-written — don't hand-author)
-
-```json
-{
-  "version": "28",
-  "date": "2026-07-19",
-  "size": "1010 KB",
-  "url": "https://github.com/mbundgaard/MunerisTools/releases/download/ip-printer/v28/MunerisIpPrinter.exe"
 }
 ```
 

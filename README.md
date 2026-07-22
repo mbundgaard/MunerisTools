@@ -12,7 +12,7 @@ releases live here.
 - **`site/`** — the static-site generator (`build.js`, a small Node build) and `template.html`.
   It reads the tool folders and writes `site/_site/`.
 - **`.github/workflows/pages.yml`** — builds and deploys the site to GitHub Pages on pushes under
-  `site/**` (the publish pipeline's `release.json` commit lands there, so releases deploy too).
+  `site/**` (the publish pipeline commits there too, so releases deploy without a separate trigger).
 
 The site is generated. Never hand-edit `site/_site/`.
 
@@ -20,31 +20,30 @@ The site is generated. Never hand-edit `site/_site/`.
 
 ## The tool-folder contract — read this to add or update a tool
 
-A tool is a folder `site/tools/<slug>/`. **Four files are required** — they are the published
+A tool is a folder `site/tools/<slug>/`. **Three files are required** — they are the published
 contract, served verbatim at `https://tools.muneris.cloud/<slug>/…` and described in
 [`llms.txt`](https://tools.muneris.cloud/llms.txt) so an AI agent can find and use the tool
 without scraping the site:
 
-| File | Who writes it | Purpose |
-|---|---|---|
-| `tool.json` | you (human or agent) | The frame — name, icon, features, description, runtime, etc. |
-| `release.json` | the release pipeline | Latest build's version / date / size / download url. **This is the file an updater reads.** |
-| `README.md` | you | What the tool does and how it is used. |
-| `CHANGELOG.md` | you | Version history, newest first. Its newest `## v<n>` section becomes the release notes. |
+| File | Purpose |
+|---|---|
+| `tool.json` | The frame — name, icon, features, description, runtime, etc. |
+| `README.md` | What the tool does and how it is used. |
+| `CHANGELOG.md` | Version history, newest first. Its newest `## v<n>` section becomes the release notes. |
 
-**Beyond those four, add as many `.md` files as you like** — `QUICK-START.md`, notes, a FAQ.
+**Beyond those three, add as many `.md` files as you like** — `QUICK-START.md`, notes, a FAQ.
 Each becomes a documentation tab on the tool's page, ordered by its frontmatter. They are
-rendered online and published alongside the rest, they are simply not part of the four-file
+rendered online and published alongside the rest, they are simply not part of the three-file
 contract that `llms.txt` advertises.
 
-| Also optional | | |
-|---|---|---|
-| `screenshots/` | you | Images here become an auto **Screenshots** gallery tab (always last). |
+| Also optional | |
+|---|---|
+| `screenshots/` | Images here become an auto **Screenshots** gallery tab (always last). |
 
 The generator discovers **every folder under `site/tools/` that contains a `tool.json`** — one
 home-page card and one detail page per folder. There is no central registry: add a folder and it
-appears; a folder without `release.json` renders as **Coming soon** (no download), and its
-`release.json` URL 404s, which is how an agent tells "not released yet" from "no such tool".
+appears. Until the tool's first release it renders as **Coming soon**, with no download button;
+the release pipeline flips that over automatically when it publishes a build.
 
 ### `tool.json` — required, human-authored
 
@@ -68,21 +67,7 @@ appears; a folder without `release.json` renders as **Coming soon** (no download
 - **`description`** — a single line, reused on the card and the page header (there is only one).
 - **`order`** — card sort order, ascending; ties break alphabetically.
 - **`asset`** — the release asset's filename, shown under the Download button.
-- Do **not** put release info here — the latest release lives in `release.json`.
-
-### `release.json` — pipeline-written, do not hand-author
-
-```json
-{
-  "version": "28",
-  "date": "2026-07-19",
-  "size": "1010 KB",
-  "url": "https://github.com/mbundgaard/MunerisTools/releases/download/ip-printer/v28/MunerisIpPrinter.exe"
-}
-```
-
-Written (whole-file) by the tool's publish pipeline when it cuts a release. Omit it to list the
-tool as **Coming soon**.
+- Do **not** put version, date or download info here — the release pipeline supplies those.
 
 ### Markdown pages — one tab per `.md`
 
@@ -162,10 +147,10 @@ Create `site/tools/<slug>/` with a `tool.json` and at least a `README.md`. To pu
 
 1. Create the release + attach the binary
    `gh release create <slug>/v<n> <binary> --repo mbundgaard/MunerisTools --title "<Name> v<n>"`
-2. Add `site/tools/<slug>/release.json` (`version`, `date`, `size`, `url` — see the schema above).
+2. Add the release feed by hand — `site/tools/<slug>/release.json`, shape below.
 3. Commit + push — the Pages build regenerates the site.
 
-Omit `release.json` to list the tool as **Coming soon**.
+Skip steps 1–2 and the tool simply lists as **Coming soon**.
 
 ## Icons
 
@@ -174,12 +159,28 @@ one, add its SVG under a new key to the `ICONS` map in **`site/template.html`**.
 
 ## Releases & auto-update
 
+*Release plumbing — not part of the tool-folder contract above. Skip this unless you are wiring up
+a pipeline or publishing a build by hand.*
+
 - One GitHub release per build, tagged **`<slug>/v<n>`** (e.g. `ip-printer/v28`), with the binary
   attached under a **stable filename** so users' shortcuts survive updates.
-- Each tool's **`release.json`** is published at `https://tools.muneris.cloud/<slug>/release.json`,
-  so a tool polls that to self-update: compare its `version` with the running build, then download
-  its `url`. (There is no generated `version.json` — the pipeline-written `release.json` IS the
-  update feed, so there is no second shape to keep in sync.)
+- Cutting a release writes **`release.json`** into the tool's folder — whole-file, by the pipeline.
+  It is the one file in there nobody hand-authors, and its presence is what turns **Coming soon**
+  into a download.
+
+  ```json
+  {
+    "version": "28",
+    "date": "2026-07-19",
+    "size": "1010 KB",
+    "url": "https://github.com/mbundgaard/MunerisTools/releases/download/ip-printer/v28/MunerisIpPrinter.exe"
+  }
+  ```
+
+- It is published at `https://tools.muneris.cloud/<slug>/release.json`, so a tool polls that to
+  self-update: compare its `version` with the running build, then download its `url`. (There is no
+  generated `version.json` — the pipeline-written `release.json` IS the update feed, so there is no
+  second shape to keep in sync.)
 
 ## Local preview
 
