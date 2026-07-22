@@ -3,6 +3,10 @@ title: Changelog
 order: 100
 ---
 
+## v32 — 2026-07-22
+- fix: **Automatic update checking was broken** and had been silently failing — the app looked for a release that no longer exists, so it never noticed new versions. It now reads the published release feed at tools.muneris.cloud. Copies older than this one cannot fix themselves; replace them once by hand and they will keep up from then on.
+- chg: The update link and the About dialog now open the tool's page at tools.muneris.cloud, which carries the download and the changelog. "Copy share link" copies that page too, instead of a source-code link.
+
 ## v31 — 2026-07-22
 - fix: Text with em-dashes, arrows and other non-ASCII characters displayed as mojibake (`â€"`). The compiler was reading our BOM-less UTF-8 sources as Windows-1252, so the corruption was baked into the app at build time — 21 strings were affected.
 - fix: Published release notes had the same corruption, for the same reason in the publish step.
