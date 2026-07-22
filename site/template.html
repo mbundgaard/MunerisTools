@@ -248,6 +248,8 @@
       <div class="hero-cta">
         <a class="btn btn-primary" onclick="document.getElementById('tools').scrollIntoView()">Browse tools</a>
         <a class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView()">Get in touch</a>
+        <a class="btn btn-ghost" id="ai-prompt-btn" onclick="copyAiPrompt(this)"
+           title="Copies a short prompt you can paste into an AI assistant, so it can find and use the right tool">Copy AI prompt</a>
       </div>
     </div>
   </header>
@@ -432,6 +434,45 @@ function showHome(){
   document.getElementById('tool-page').style.display='none';
   document.getElementById('home').style.display='block';
   window.scrollTo(0,0);
+}
+
+/* ---------- copy AI prompt ----------
+   Seeds an agent with the entry point only; llms.txt teaches it the rest, so this text
+   never has to list tools or versions and cannot go stale. */
+const AI_PROMPT = [
+  'Muneris publishes small, self-contained Windows tools for working with Oracle Simphony POS systems.',
+  '',
+  'Start by reading https://tools.muneris.cloud/llms.txt — it lists every tool and explains the files',
+  'each one publishes (release.json for the latest build and its download URL, tool.json, README.md,',
+  'QUICK-START.md, CHANGELOG.md).',
+  '',
+  'Then help me pick the right tool for my task, tell me what it does, and show me how to get it and',
+  'use it. The command-line tools are agent-first: run `<tool> --help`, and results come back as JSON.'
+].join('\n');
+
+function copyAiPrompt(el){
+  const done = ok => {
+    const was = el.textContent;
+    el.textContent = ok ? 'Copied!' : 'Press Ctrl+C';
+    setTimeout(() => { el.textContent = was; }, 2000);
+  };
+  // navigator.clipboard needs a secure context; fall back for http:// or older browsers.
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(AI_PROMPT).then(() => done(true), () => fallback());
+  } else fallback();
+
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = AI_PROMPT;
+    ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) { ok = false; }
+    document.body.removeChild(ta);
+    done(ok);
+  }
 }
 
 /* ---------- screenshot lightbox ---------- */
