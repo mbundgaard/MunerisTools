@@ -3,6 +3,10 @@ title: Changelog
 order: 100
 ---
 
+## v4 — 2026-07-22
+- fix: `sts version --check` reported "could not reach the feed" — it read a file that no longer exists. It now reads the tool's published `release.json`, the documented update feed.
+- `--check` also reports the release date and download size, which come from that file.
+
 ## v3 — 2026-07-22
 - New `sts version`: reports this build as JSON (`v3`, the full assembly version, and the commit), read from the exe — no network, so it works offline and on a locked-down POS network.
 - `sts version --check` compares against the published build and returns `latest`, `upToDate` and the download URL. It is the only call StsCLI makes to Muneris, it is opt-in, and if the feed is unreachable it still reports your local version instead of failing.
