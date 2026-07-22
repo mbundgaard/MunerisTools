@@ -4,7 +4,7 @@ Public documentation, release binaries, and the generated catalog site for Muner
 self-contained Windows utilities. Each tool's **source code is private** — only its docs and
 releases live here.
 
-**Live site:** https://mbundgaard.github.io/MunerisTools/
+**Live site:** https://tools.muneris.cloud/
 
 ## What's in here
 
@@ -20,18 +20,31 @@ The site is generated. Never hand-edit `site/_site/`.
 
 ## The tool-folder contract — read this to add or update a tool
 
-A tool is a folder `site/tools/<slug>/` containing:
+A tool is a folder `site/tools/<slug>/`. **Four files are required** — they are the published
+contract, served verbatim at `https://tools.muneris.cloud/<slug>/…` and described in
+[`llms.txt`](https://tools.muneris.cloud/llms.txt) so an AI agent can find and use the tool
+without scraping the site:
 
 | File | Who writes it | Purpose |
 |---|---|---|
-| `tool.json` | you (human or agent) | The frame — name, icon, description, runtime, etc. |
-| `release.json` | the release pipeline | Latest build's version / date / size / download url. |
-| `*.md` | you | One documentation tab per file (`README.md`, `QUICK-START.md`, `CHANGELOG.md`, …). |
-| `screenshots/` *(optional)* | you | Images here become an auto **Screenshots** gallery tab (always last). |
+| `tool.json` | you (human or agent) | The frame — name, icon, features, description, runtime, etc. |
+| `release.json` | the release pipeline | Latest build's version / date / size / download url. **This is the file an updater reads.** |
+| `README.md` | you | What the tool does and how it is used. |
+| `CHANGELOG.md` | you | Version history, newest first. Its newest `## v<n>` section becomes the release notes. |
+
+**Beyond those four, add as many `.md` files as you like** — `QUICK-START.md`, notes, a FAQ.
+Each becomes a documentation tab on the tool's page, ordered by its frontmatter. They are
+rendered online and published alongside the rest, they are simply not part of the four-file
+contract that `llms.txt` advertises.
+
+| Also optional | | |
+|---|---|---|
+| `screenshots/` | you | Images here become an auto **Screenshots** gallery tab (always last). |
 
 The generator discovers **every folder under `site/tools/` that contains a `tool.json`** — one
 home-page card and one detail page per folder. There is no central registry: add a folder and it
-appears; a folder without `release.json` renders as **Coming soon** (no download).
+appears; a folder without `release.json` renders as **Coming soon** (no download), and its
+`release.json` URL 404s, which is how an agent tells "not released yet" from "no such tool".
 
 ### `tool.json` — required, human-authored
 
@@ -39,7 +52,6 @@ appears; a folder without `release.json` renders as **Coming soon** (no download
 {
   "name": "IP Printer",
   "icon": "printer",
-  "ai": true,
   "features": ["AI-enabled", "Auto-update"],
   "description": "One line — used on the card AND as the detail-page subtitle.",
   "order": 1,
@@ -50,11 +62,9 @@ appears; a folder without `release.json` renders as **Coming soon** (no download
 ```
 
 - **`icon`** — one of: `printer` · `terminal` · `kds` · `sync` · `gauge` · `key`.
-- **`ai`** — `true` adds the *"AI-enabled"* label on the detail page (and the *"AI · agent-drivable"*
-  fallback on the card when `features` is omitted).
 - **`features`** *(optional)* — a short list of notable-feature chips shown at the bottom of the card
-  (e.g. `["AI-enabled", "Auto-update"]`). When present it replaces the default AI pill; keep it to
-  2–3 short items.
+  (e.g. `["AI-enabled", "Auto-update"]`); keep it to 2–3 short items. (A boolean `ai` field was
+  retired on 2026-07-21 — say `"AI-enabled"` as a feature instead.)
 - **`description`** — a single line, reused on the card and the page header (there is only one).
 - **`order`** — card sort order, ascending; ties break alphabetically.
 - **`asset`** — the release asset's filename, shown under the Download button.
@@ -138,7 +148,7 @@ Keep the tool's public docs in a top-level **`tool/`** folder in that repo (`too
 - **`publish-docs.ps1`** — mirrors `tool/` → `MunerisTools/site/tools/<slug>/`. Change `$Slug`.
 - **`azure-pipelines.yml`** — bump-gate → build → `publish-release.ps1` → clone MunerisTools +
   `publish-docs.ps1` + push. Change the build step and the `<slug>` in the gate/commit, then add a
-  **secret `GH_PAT`** variable (classic PAT, `repo` scope) in the ADO pipeline.
+  `GH_PAT` variable (a GitHub token with `repo` scope) in the pipeline YAML.
 
 On every push to `main` the pipeline **mirrors `tool/` (docs, screenshots, `tool.json`) to the site** —
 so doc and screenshot fixes ship without a version bump. If the build number is new it *also* builds the
@@ -166,8 +176,10 @@ one, add its SVG under a new key to the `ICONS` map in **`site/template.html`**.
 
 - One GitHub release per build, tagged **`<slug>/v<n>`** (e.g. `ip-printer/v28`), with the binary
   attached under a **stable filename** so users' shortcuts survive updates.
-- The generator also writes **`<slug>/version.json`** (latest build + download url) into the site, so
-  each tool can poll `https://mbundgaard.github.io/MunerisTools/<slug>/version.json` to self-update.
+- Each tool's **`release.json`** is published at `https://tools.muneris.cloud/<slug>/release.json`,
+  so a tool polls that to self-update: compare its `version` with the running build, then download
+  its `url`. (There is no generated `version.json` — the pipeline-written `release.json` IS the
+  update feed, so there is no second shape to keep in sync.)
 
 ## Local preview
 

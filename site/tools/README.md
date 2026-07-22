@@ -6,11 +6,18 @@ add a folder and it appears.
 
 > Full guide (schema, changelog formatting, how releases wire up): see the repo root `README.md`.
 
-Each folder holds:
+**Four files are required** — they are the published contract, served verbatim at
+`https://tools.muneris.cloud/<slug>/…` and described in
+[`llms.txt`](https://tools.muneris.cloud/llms.txt) so an AI agent can find and use the tool:
 
 - **`tool.json`** — the frame (human-authored).
-- **`release.json`** — latest build, written by the publish pipeline. Absent → **Coming soon** (no download).
-- **`*.md`** — one documentation tab per file.
+- **`release.json`** — latest build, written by the publish pipeline. **The file an updater reads.**
+  Absent → **Coming soon** (no download), and the URL 404s.
+- **`README.md`** — what the tool does and how it is used.
+- **`CHANGELOG.md`** — version history, newest first; the newest section becomes the release notes.
+
+**Any number of further `.md` files may be added** (`QUICK-START.md`, notes, …). Each becomes a
+documentation tab and is published — they are just not part of the four-file contract.
 
 ## `tool.json`
 
@@ -18,7 +25,6 @@ Each folder holds:
 {
   "name": "IP Printer",
   "icon": "printer",                       // printer | terminal | kds | sync | gauge | key
-  "ai": true,
   "features": ["AI-enabled", "Auto-update"],  // optional: notable-feature chips on the card
   "description": "One line — shown on the card AND as the detail-page subtitle.",
   "order": 1,                              // card sort order (ascending); ties break alphabetically
