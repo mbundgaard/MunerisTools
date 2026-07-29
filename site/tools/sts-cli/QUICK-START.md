@@ -7,10 +7,10 @@ order: 1
 2. **Log in** — one time:
    ```
    sts auth env                                    # pick an Oracle environment
-   sts auth config --env mte4 --org <ORG> --username <user>
+   sts auth config --env mte4 --org <ORG> --username <user> --client-id <id>
    sts auth login --password <pw>
    ```
-   Config and tokens are saved in `StsCli.json` next to the exe; the **password is never stored**.
+   Config and tokens are saved in `StsCli.json` next to the exe; the **password is never stored**. Nothing is preconfigured — until `auth config` runs, every command fails with `not-configured` (exit 7) and names the fields it still needs.
 3. **Read the property:**
    ```
    sts location list
@@ -19,7 +19,7 @@ order: 1
    ```
 4. **Post a check:** `sts check example` prints a ready-to-fill body; then
    ```
-   sts check new --location <loc> --rvc <rvc> --employee <emp> --order-type 1 --body order.json
+   sts check new --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
    ```
 
 Run `sts endpoints` to list every read command, and `sts <cmd> --help` for full details on any of them.

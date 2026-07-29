@@ -11,18 +11,18 @@ A single self-contained `sts.exe`, modelled on `gh`/`az`: grouped noun-verb comm
 ## Using it
 ```
 sts auth env                                   # pick your Oracle environment
-sts auth config --env mte4 --org RIN --username <user>
+sts auth config --env mte4 --org <ORG> --username <user> --client-id <id>
 sts auth login --password <pw>                 # OAuth2 authorization-code + PKCE
 
 sts location list                              # what can this account reach?
-sts rvc list --location 9993
-sts menu get --location 9993 --rvc 104         # config reads
-sts tender list --location 9993 --rvc 104
+sts rvc list --location <loc>
+sts menu get --location <loc> --rvc <rvc>      # config reads
+sts tender list --location <loc> --rvc <rvc>
 
-sts check calculate --location 9993 --rvc 104 --employee 1479 --order-type 1 --body order.json
-sts check new       --location 9993 --rvc 104 --employee 1479 --order-type 1 --body order.json
+sts check calculate --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
+sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
 ```
-Every command emits **one JSON envelope on stdout**; human/diagnostic logs go to stderr. Config and tokens live in `StsCli.json` next to the exe — the **password is never stored** (it's used once at login; everything after renews via `sts auth refresh`).
+Every command emits **one JSON envelope on stdout**; human/diagnostic logs go to stderr. Config and tokens live in `StsCli.json` next to the exe — the **password is never stored** (it's used once at login; everything after renews via `sts auth refresh`). **Nothing ships preconfigured**: a fresh `sts.exe` has no organization, user, or client id, so `sts auth config` is the required first step.
 
 ## Cloud vs local
 Reads and checks target the **cloud STS** by default. For a property whose Simphony is on the **local hub**, add `--local-sts-ip <ip>` to send that one call to its on-prem STS. `sts connection status --location <loc> --rvc <rvc>` tells you where a property is live.

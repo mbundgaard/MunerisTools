@@ -3,6 +3,11 @@ title: Changelog
 order: 100
 ---
 
+## v5 — 2026-07-29
+- Code cleanup: removed the built-in first-run configuration. A fresh `sts.exe` now ships with nothing preconfigured — no organization, user, or client id.
+- **Upgrading changes nothing** — your existing `StsCli.json` is untouched. On a **fresh install**, run `sts auth config --env <env> --org <ORG> --username <user> --client-id <id>` first; until then commands return `not-configured` (exit 7) and name the fields still missing.
+- Help text, `sts endpoints` examples and the docs now use placeholders (`<loc>`, `<rvc>`, `<emp>`, `<type>`) instead of values from one specific property, so a copy-pasted example no longer targets a property you don't have.
+
 ## v4 — 2026-07-22
 - fix: `sts version --check` reported "could not reach the feed" — it read a file that no longer exists. It now reads the tool's published `release.json`, the documented update feed.
 - `--check` also reports the release date and download size, which come from that file.
