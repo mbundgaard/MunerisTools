@@ -4,6 +4,9 @@ order: 100
 ---
 
 ## v5 — 2026-07-29
+- `auth login` / `auth refresh` now return **the identity server's own error message** instead of a generic one. A wrong password used to surface as `signin did not return a redirect (nextOp=null)`; it now reads `signin failed (HTTP 401): Invalid credentials. [AUTHENTICATION_INVALID]`.
+- The full IDM response body is passed through verbatim in `error.details` (`{leg, status, code, body}`) — the same contract the read commands already use, so a caller can branch on it. Response bodies only; your password is never included.
+- Hints are now specific: invalid credentials points at the account, an unrecognised client id points at `sts auth show` and warns that a client id's trailing `=` padding is significant (stripping it makes a valid id fail).
 - Code cleanup: removed the built-in first-run configuration. A fresh `sts.exe` now ships with nothing preconfigured — no organization, user, or client id.
 - **Upgrading changes nothing** — your existing `StsCli.json` is untouched. On a **fresh install**, run `sts auth config --env <env> --org <ORG> --username <user> --client-id <id>` first; until then commands return `not-configured` (exit 7) and name the fields still missing.
 - Help text, `sts endpoints` examples and the docs now use placeholders (`<loc>`, `<rvc>`, `<emp>`, `<type>`) instead of values from one specific property, so a copy-pasted example no longer targets a property you don't have.
