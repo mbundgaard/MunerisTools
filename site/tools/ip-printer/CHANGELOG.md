@@ -3,6 +3,15 @@ title: Changelog
 order: 100
 ---
 
+## v33 — 2026-07-30
+- add: **Receipts are drawn as real printer dots.** The preview is now composited on a dot canvas at the printer's own resolution, the way the thermal head builds a line — so magnification, bold, underline, reverse, logos, QR codes and raster graphics all land exactly where the printer would put them, and a line wraps where the printer wraps it.
+- add: **Print to a real printer.** Put a printer's IP address under Settings ▸ General and every receipt gets a Print button that sends the exact bytes it received on to that printer. Handy for getting a captured receipt onto real paper without going back through the POS.
+- add: `POST /print?printer=<#>` does the same over the local API, so an agent can print a receipt it just designed.
+- chg: **Settings apply immediately.** Only adding or removing a printer still asks for a restart — each printer address binds its own socket. Code page, receipt history, logging and the physical printer address all take effect the moment you save. Renaming a printer over the API is live too.
+- fix: **Bold text was far too heavy at double and quadruple width.** Emphasis was being magnified along with the character, so a 4×-wide bold line came out four times bolder than the printer prints it — letters merged and the holes in a, e and g filled in.
+- chg: Text is a little lighter and less cramped, closer to what the printer lays down.
+- chg: Copy-as-image now copies the receipt at half size, matching what you see on screen, instead of an image four times larger.
+
 ## v32 — 2026-07-22
 - fix: **Automatic update checking was broken** and had been silently failing — the app looked for a release that no longer exists, so it never noticed new versions. It now reads the published release feed at tools.muneris.cloud. Copies older than this one cannot fix themselves; replace them once by hand and they will keep up from then on.
 - chg: The update link and the About dialog now open the tool's page at tools.muneris.cloud, which carries the download and the changelog. "Copy share link" copies that page too, instead of a source-code link.
