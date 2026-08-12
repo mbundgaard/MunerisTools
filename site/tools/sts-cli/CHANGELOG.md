@@ -3,6 +3,11 @@ title: Changelog
 order: 100
 ---
 
+## v6 — 2026-08-05
+- **Security fix — update from v5.** When an account's password had expired, the identity server returned a usable password-reset token in its response, and v5 printed it to stdout (and to `sts-invocations.jsonl` with `--debug-log on`). Secrets in an auth response are now replaced with `[redacted]` before anything is printed. If you saw such an error on v5, treat that account's reset token as exposed.
+- An **expired password** is now reported as what it is — "the credentials were accepted but the account's password has EXPIRED", with the portal URL to change it — instead of the misleading "usually a wrong username/password".
+- `sts auth login --help` now says that failures carry the identity server's own reason, and that an expired password is not a wrong-password error.
+
 ## v5 — 2026-07-29
 - `auth login` / `auth refresh` now return **the identity server's own error message** instead of a generic one. A wrong password used to surface as `signin did not return a redirect (nextOp=null)`; it now reads `signin failed (HTTP 401): Invalid credentials. [AUTHENTICATION_INVALID]`.
 - The full IDM response body is passed through verbatim in `error.details` (`{leg, status, code, body}`) — the same contract the read commands already use, so a caller can branch on it. Response bodies only; your password is never included.
