@@ -21,6 +21,7 @@ order: 1
    ```
    sts check new --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
    ```
+   Add `--charged-tip <amount>` for a card tip — your tender's `total` must be the full amount charged, tip included.
 
 Run `sts endpoints` to list every read command, and `sts <cmd> --help` for full details on any of them.
 

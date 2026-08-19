@@ -21,8 +21,14 @@ sts tender list --location <loc> --rvc <rvc>
 
 sts check calculate --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
 sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
+sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json --charged-tip 20
 ```
 Every command emits **one JSON envelope on stdout**; human/diagnostic logs go to stderr. Config and tokens live in `StsCli.json` next to the exe — the **password is never stored** (it's used once at login; everything after renews via `sts auth refresh`). **Nothing ships preconfigured**: a fresh `sts.exe` has no organization, user, or client id, so `sts auth config` is the required first step.
+
+## Card tips
+`--charged-tip <amount>` on `check new` / `check add` posts a **charged tip**: it rides on the tender, and Simphony applies it through the service charge linked to that tender. The tender's `total` in your body must be the **full amount charged, tip included** (97.00 item + 20.00 tip = `total: 117`) — the CLI never computes it, because only the caller knows what the terminal took.
+
+A dropped tip is caught rather than reported as success. If a tender isn't configured for charged tips, STS answers `200 OK`, zeroes the tip and returns it as change — the customer pays the item total and nothing in the response says so. StsCLI compares what you sent against what came back and exits `11` with the reason (and the check in `error.details`) when the tip was dropped, returned as change, or left the check open owing it.
 
 ## Cloud vs local
 Reads and checks target the **cloud STS** by default. For a property whose Simphony is on the **local hub**, add `--local-sts-ip <ip>` to send that one call to its on-prem STS. `sts connection status --location <loc> --rvc <rvc>` tells you where a property is live.

@@ -3,6 +3,14 @@ title: Changelog
 order: 100
 ---
 
+## v7 — 2026-08-19
+- **New: `--charged-tip <amount>` on `sts check new` and `sts check add`** — post a card tip. The tip rides on the tender (`chargedTipTotal`), and Simphony applies it through the service charge **linked to that tender**; you no longer hand-write the field into `--body`.
+- **The tender's `total` must be the FULL amount charged, tip included** (97.00 item + 20.00 tip = `total: 117`). The CLI never computes it — only the caller knows what the terminal actually took. If `total` only covers the items, the tip posts but the check stays **open owing it**, and the command now says so instead of reporting success.
+- **A tip the POS silently drops is now an error.** When a tender is not configured for charged tips, STS returns `200 OK`, zeroes `chargedTipTotal` and pays the tip back out as change — the customer is charged the item total and nothing in the response says so. Every tipped write is now compared against the response: a dropped tip, a tip returned as change, or a check left open owing the tip exits `11 api-error` with the reason, and the check itself in `error.details`.
+- The check is verified for **hand-written bodies too**, not just uses of the flag — if your `--body` carries `chargedTipTotal`, it is checked.
+- `sts check example` now explains the charged tip: what `total` must be, that the tip is applied via the tender-linked service charge, and that this is not the same as posting a tip into `serviceCharges[]`.
+- Not on `sts check calculate` — that endpoint ignores tenders entirely, so a tip there would do nothing.
+
 ## v6 — 2026-08-05
 - **Security fix — update from v5.** When an account's password had expired, the identity server returned a usable password-reset token in its response, and v5 printed it to stdout (and to `sts-invocations.jsonl` with `--debug-log on`). Secrets in an auth response are now replaced with `[redacted]` before anything is printed. If you saw such an error on v5, treat that account's reset token as exposed.
 - An **expired password** is now reported as what it is — "the credentials were accepted but the account's password has EXPIRED", with the portal URL to change it — instead of the misleading "usually a wrong username/password".
