@@ -22,6 +22,7 @@ order: 1
    sts check new --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
    ```
    Add `--charged-tip <amount>` for a card tip — your tender's `total` must be the full amount charged, tip included.
+   Add `--idempotency-id <id>` if you may retry: reuse the same id and a retry returns the existing check instead of creating a second one.
 
 Run `sts endpoints` to list every read command, and `sts <cmd> --help` for full details on any of them.
 

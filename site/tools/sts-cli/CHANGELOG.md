@@ -3,6 +3,14 @@ title: Changelog
 order: 100
 ---
 
+## v8 — 2026-08-20
+- **New: `--idempotency-id <id>` on `sts check new` and `sts check add`** — makes a check write safe to retry. Reuse **one id for every retry of the same order**; StsCLI puts it on the request and asks STS for duplicate detection (`Simphony-Features: detect-duplicate-request`). A retry then returns the **existing** check instead of creating a second one, and says so on stderr. Accepts 32 hex characters or a UUID with dashes.
+- **Why it matters:** a check POST is *not* safe to blind-retry. A timeout is not proof the check wasn't created — the POS may have committed it and only the reply got lost. Without an id, a retry charges the customer twice. Verified: the same body posted twice with one id produced a single check; without the flag it produced two paid checks.
+- **Nothing changes if you don't use it.** Without the flag StsCLI still generates a fresh id per post and sends no feature header, exactly as before.
+- Duplicate detection **spans endpoints** — a check posted to the cloud STS is recognised as a duplicate by the on-prem STS and vice versa. So failing over to the other endpoint after an uncertain call is safe *with* an id, and duplicates without one.
+- When reconciling instead, note **`idempotencyId` is not returned by `sts check list`** — correlate on the check name or the tender's reference text.
+- `sts check example` now carries the retry rule alongside the body format.
+
 ## v7 — 2026-08-19
 - **New: `--charged-tip <amount>` on `sts check new` and `sts check add`** — post a card tip. The tip rides on the tender (`chargedTipTotal`), and Simphony applies it through the service charge **linked to that tender**; you no longer hand-write the field into `--body`.
 - **The tender's `total` must be the FULL amount charged, tip included** (97.00 item + 20.00 tip = `total: 117`). The CLI never computes it — only the caller knows what the terminal actually took. If `total` only covers the items, the tip posts but the check stays **open owing it**, and the command now says so instead of reporting success.
