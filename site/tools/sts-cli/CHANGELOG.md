@@ -3,6 +3,11 @@ title: Changelog
 order: 100
 ---
 
+## v9 — 2026-08-28
+- **New: `--pickup-time <iso-time>` on `sts check new` and `sts check add`** — writes Oracle's `header.pickupTime` field for autofire/pickup scheduling. The request body may still carry `header.pickupTime`; the flag wins when supplied. Help/docs call out the POS requirement: the order type needs lead time configured and the pickup time must be far enough in the future.
+- `sts check example`, the quick start, and the published docs now show the pickup-time/autofire path alongside service-total send/fire, charged tips, and idempotent retries.
+- Project agent guidance moved from Claude-specific `CLAUDE.md` to Pi/Herdr `AGENTS.md`.
+
 ## v8 — 2026-08-20
 - **New: `--idempotency-id <id>` on `sts check new` and `sts check add`** — makes a check write safe to retry. Reuse **one id for every retry of the same order**; StsCLI puts it on the request and asks STS for duplicate detection (`Simphony-Features: detect-duplicate-request`). A retry then returns the **existing** check instead of creating a second one, and says so on stderr. Accepts 32 hex characters or a UUID with dashes.
 - **Why it matters:** a check POST is *not* safe to blind-retry. A timeout is not proof the check wasn't created — the POS may have committed it and only the reply got lost. Without an id, a retry charges the customer twice. Verified: the same body posted twice with one id produced a single check; without the flag it produced two paid checks.

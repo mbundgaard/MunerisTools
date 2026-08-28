@@ -21,7 +21,9 @@ order: 1
    ```
    sts check new --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
    ```
+   Use a payment tender to settle/close; use a `serviceTotal` tender (for example tender 1004 where configured) with `total: 0` to send/fire and leave the check open.
    Add `--charged-tip <amount>` for a card tip — your tender's `total` must be the full amount charged, tip included.
+   Add `--pickup-time <iso-time>` for Oracle autofire/pickup scheduling; the order type needs lead time configured and the time must be far enough in the future.
    Add `--idempotency-id <id>` if you may retry: reuse the same id and a retry returns the existing check instead of creating a second one.
 
 Run `sts endpoints` to list every read command, and `sts <cmd> --help` for full details on any of them.

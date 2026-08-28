@@ -23,8 +23,12 @@ sts check calculate --location <loc> --rvc <rvc> --employee <emp> --order-type <
 sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json
 sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json --charged-tip 20
 sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json --idempotency-id <id>
+sts check new       --location <loc> --rvc <rvc> --employee <emp> --order-type <type> --body order.json --pickup-time 2026-08-28T12:30:00Z
 ```
 Every command emits **one JSON envelope on stdout**; human/diagnostic logs go to stderr. Config and tokens live in `StsCli.json` next to the exe — the **password is never stored** (it's used once at login; everything after renews via `sts auth refresh`). **Nothing ships preconfigured**: a fresh `sts.exe` has no organization, user, or client id, so `sts auth config` is the required first step.
+
+## Autofire / pickup time
+`--pickup-time <iso-time>` on `check new` / `check add` writes Oracle's `header.pickupTime` field, which Simphony uses for autofire timing. You may also put `pickupTime` directly in the body; the flag wins when supplied. The order type must have lead time configured, and the pickup time must be far enough in the future or the POS rejects the order.
 
 ## Card tips
 `--charged-tip <amount>` on `check new` / `check add` posts a **charged tip**: it rides on the tender, and Simphony applies it through the service charge linked to that tender. The tender's `total` in your body must be the **full amount charged, tip included** (97.00 item + 20.00 tip = `total: 117`) — the CLI never computes it, because only the caller knows what the terminal took.
@@ -48,7 +52,7 @@ sts version --check      # adds latest, upToDate and the download URL
 `--check` is the **only** call StsCLI makes to Muneris, and only to compare build numbers. If it can't reach the feed it still reports your local version rather than failing.
 
 ## Drive it with an AI agent
-StsCLI is agent-first: a stable JSON schema, a branchable exit-code taxonomy, and structured self-correcting errors (the **full STS response body is surfaced verbatim**, so an agent sees exactly what went wrong). `sts endpoints` lists every read; for the write side, **`sts check example`** prints a ready-to-fill request body with the rules baked in (which tender settles vs. fires, what the CLI fills for you) — the agent adapts a concrete example instead of guessing a schema.
+StsCLI is agent-first: a stable JSON schema, a branchable exit-code taxonomy, and structured self-correcting errors (the **full STS response body is surfaced verbatim**, so an agent sees exactly what went wrong). `sts endpoints` lists every read; for the write side, **`sts check example`** prints a ready-to-fill request body with the rules baked in (which tender settles vs. service-total fires, what the CLI fills for you) — the agent adapts a concrete example instead of guessing a schema.
 
 ## Feedback
 StsCLI comes from **Muneris** — [tools.muneris.cloud](https://tools.muneris.cloud/#sts-cli). It's built to be driven by an AI and to grow with use, so if a verb or flag could be clearer, or is missing, say so: **support@muneris.dk**. Include the command you ran, the JSON envelope it returned, and the exit code.
