@@ -3,7 +3,7 @@ title: Changelog
 order: 100
 ---
 
-## v2 � 2026-08-29
+## v2 — 2026-08-29
 - chg: Auto-update now follows the Muneris IP Printer flow: silent periodic release-feed polling, background download, then an "Update ready!" one-click swap and relaunch.
 
 ## v1 — 2026-08-29
