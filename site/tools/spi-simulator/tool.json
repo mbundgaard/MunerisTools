@@ -1,7 +1,7 @@
 {
   "name": "SPI Simulator",
   "icon": "credit-card-terminal",
-  "features": ["Payment testing", "Single executable"],
+  "features": ["Payment testing", "Auto-update"],
   "description": "Stand in for a local Simphony SPI payment terminal on 127.0.0.1:8991 — inspect the request, choose a simulated response, and send it back.",
   "order": 2,
   "runtime": ".NET 10 Windows Desktop Runtime",
