@@ -12,9 +12,9 @@ order: 1
 Authentication. Explicit requests. Unchanged responses.
 
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/LICENSE)
 
-[Getting started](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/README.md#getting-started) · [Command reference](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/CLI.md) · [Authentication](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/AUTHENTICATION.md) · [Oracle API reference](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/) · [Contributing](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/CONTRIBUTING.md)
+[Getting started](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/README.md#getting-started) · [Command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) · [Authentication](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md) · [Oracle API reference](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/) · [Contributing](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CONTRIBUTING.md)
 
 </div>
 
@@ -43,7 +43,7 @@ For the current source checkout:
 npm ci
 npm test
 npm pack
-npm install --global ./muneris-sts-cli-0.4.0.tgz
+npm install --global ./muneris-sts-cli-0.4.1.tgz
 sts --help
 ```
 
@@ -92,7 +92,7 @@ password is used for login only and is not saved by the CLI. Do not assume it is
 expired, one-time, or requires changing unless Oracle explicitly reports that;
 a 401 alone is insufficient. Refresh uses the saved refresh token, not the password.
 You can rotate the password afterward in Oracle. Never echo the password or include it in feedback. Argument values may be visible in shell history/process
-listings; see [authentication options](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/AUTHENTICATION.md).
+listings; see [authentication options](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md).
 
 Nothing ships preconfigured. Passwords are never saved. Configuration, tokens and
 feedback state live outside the npm installation, so upgrades do not remove them:
@@ -111,7 +111,7 @@ repeating setup/login. Different OS users or machines do not automatically share
 sts auth refresh   # explicitly refresh and save rotated tokens
 ```
 
-See [authentication and state](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/AUTHENTICATION.md) for secure shell examples, custom environments, state locations, and importing an existing installation.
+See [authentication and state](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md) for secure shell examples, custom environments, state locations, and importing an existing installation.
 
 ### Read a property
 
@@ -167,7 +167,7 @@ Use **one UUID per logical write**, reusing it only when retrying that same writ
 
 A timeout does not prove a write failed. The CLI never retries writes or follows redirects automatically. Reconcile uncertain outcomes before trying again.
 
-See the [command reference](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/CLI.md) for filtering checks, charged tips, pickup/autofire time, and the first-user pilot checklist. Pickup requests use **property-local wall time**, while responses use UTC; the CLI does not convert timezones. Use the property's timezone and configured lead time.
+See the [command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) for filtering checks, charged tips, pickup/autofire time, and the first-user pilot checklist. Pickup requests use **property-local wall time**, while responses use UTC; the CLI does not convert timezones. Use the property's timezone and configured lead time.
 
 ## Choose the STS endpoint per call
 
@@ -230,7 +230,7 @@ not a server row.
 The default service is `https://feedback.muneris.cloud/`. Override with
 `sts feedback config --url <base-url>` or per-call `--url` (which takes precedence). HTTPS is required except HTTP loopback for development;
 there is no TLS bypass or authentication. `sts feedback health` tests liveness,
-not storage. See the [feedback reference](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/CLI.md#feedback) for details.
+not storage. See the [feedback reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md#feedback) for details.
 
 ## The output contract
 
@@ -255,7 +255,7 @@ Authentication responses necessarily undergo internal parsing to persist tokens;
 
 **HTTP success is not business validation.** A dropped tip, cached result, or unexpected POS behavior is for the caller to inspect. The CLI does not interpret it. A tender may ignore a charged tip and return change instead: inspect returned tenders, tips, change and totals before claiming success.
 
-Request-body numbers retain their precision, including large integers and precise decimals, in sent requests and dry-run previews. If rotated-token persistence fails after a complete synced replacement was written, a private recovery copy is retained with recovery instructions; do not blindly refresh again. See [authentication recovery](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/AUTHENTICATION.md#recovering-a-failed-state-replacement).
+Request-body numbers retain their precision, including large integers and precise decimals, in sent requests and dry-run previews. If rotated-token persistence fails after a complete synced replacement was written, a private recovery copy is retained with recovery instructions; do not blindly refresh again. See [authentication recovery](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md#recovering-a-failed-state-replacement).
 
 Exit codes: `0` success · `1` unexpected failure · `6` usage · `7` not configured · `8` no tokens · `9` auth failure · `10` network failure · `11` API non-success · `12` state/lock failure.
 
@@ -263,10 +263,10 @@ Exit codes: `0` success · `1` unexpected failure · `6` usage · `7` not config
 
 | Guide | Contents |
 |---|---|
-| [Command reference](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/CLI.md) | Filters, requests, examples, endpoint overrides, TLS, limitations |
-| [Authentication and state](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/AUTHENTICATION.md) | Login, refresh, configuration, storage, restore, troubleshooting |
-| [Development](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/DEVELOPMENT.md) | Architecture, tests, package validation, release process |
-| [Changelog](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/CHANGELOG.md) | Changes and release status |
+| [Command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) | Filters, requests, examples, endpoint overrides, TLS, limitations |
+| [Authentication and state](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md) | Login, refresh, configuration, storage, restore, troubleshooting |
+| [Development](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/DEVELOPMENT.md) | Architecture, tests, package validation, release process |
+| [Changelog](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CHANGELOG.md) | Changes and release status |
 
 Primary API reference: [Oracle STS Gen2 API Guide](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/) ([Swagger](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/swagger.json)).
 
@@ -275,16 +275,16 @@ Primary API reference: [Oracle STS Gen2 API Guide](https://docs.oracle.com/en/in
 For direct help, email [support@muneris.dk](mailto:support@muneris.dk).
 Include the CLI version and a short, sanitized description of the problem.
 **Never send passwords, access/refresh tokens, or unreviewed customer data or API dumps.**
-For sensitive security issues, follow [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/SECURITY.md) rather than ordinary feedback.
+For sensitive security issues, follow [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/SECURITY.md) rather than ordinary feedback.
 
 ## Contributing
 
-Bug reports, documentation improvements, and focused pull requests are welcome. Start with [CONTRIBUTING.md](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/CONTRIBUTING.md). Report vulnerabilities privately using [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/SECURITY.md), not public issues. Participation follows our [Code of Conduct](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/CODE_OF_CONDUCT.md).
+Bug reports, documentation improvements, and focused pull requests are welcome. Start with [CONTRIBUTING.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CONTRIBUTING.md). Report vulnerabilities privately using [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/SECURITY.md), not public issues. Participation follows our [Code of Conduct](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CODE_OF_CONDUCT.md).
 
 Please keep real credentials, customer records, and unreviewed API responses out of issues and pull requests.
 
 ## License
 
-[MIT](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/LICENSE) © 2026 Muneris.
+[MIT](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/LICENSE) © 2026 Muneris.
 
 This project is independently maintained and is not an official Oracle product. Oracle and Simphony are trademarks of their respective owners.

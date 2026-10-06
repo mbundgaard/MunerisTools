@@ -9,7 +9,7 @@ Run `sts <group> <command> --help` for exact options. Placeholder values below m
 
 Configuration, tokens and feedback state are shared automatically per OS user.
 Windows uses `C:\Users\<user>\AppData\Roaming\StsCli`; see the
-[authentication guide](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/AUTHENTICATION.md#state-storage) for other platforms.
+[authentication guide](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md#state-storage) for other platforms.
 There is no directory override.
 The `auth env` command and `auth config --env` select Oracle deployment presets,
 not shell configuration.
@@ -65,7 +65,7 @@ other work. Users can also compare versions with `npm view @muneris/sts-cli vers
 Direct support: [support@muneris.dk](mailto:support@muneris.dk). Include a version
 and sanitized description, never passwords, tokens or unreviewed customer data.
 Sensitive security reports belong in the private channel described in
-[SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/SECURITY.md), not ordinary product feedback.
+[SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/SECURITY.md), not ordinary product feedback.
 
 ## Read endpoints
 
