@@ -1,0 +1,8 @@
+[
+  {
+    "slug": "sts-cli",
+    "repository": "mbundgaard/sts-cli",
+    "ref": "main",
+    "entrypoint": "scripts/sync-catalog.mjs"
+  }
+]

@@ -1,8 +1,20 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "date": "2026-10-06",
   "url": "https://www.npmjs.com/package/@muneris/sts-cli",
-  "install": "npm install --global @muneris/sts-cli@0.3.0",
-  "sourceCommit": "1d8a9abfbdadcc9b8df1e6aaab93871b7fcc9ee8",
-  "source": "https://github.com/mbundgaard/sts-cli/tree/1d8a9abfbdadcc9b8df1e6aaab93871b7fcc9ee8"
+  "install": "npm install --global @muneris/sts-cli@0.4.0",
+  "actions": [
+    {
+      "type": "command",
+      "label": "Install with npm",
+      "text": "npm install --global @muneris/sts-cli@0.4.0"
+    },
+    {
+      "type": "link",
+      "label": "View on npm",
+      "url": "https://www.npmjs.com/package/@muneris/sts-cli"
+    }
+  ],
+  "sourceCommit": "01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55",
+  "source": "https://github.com/mbundgaard/sts-cli/tree/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55"
 }

@@ -2,30 +2,32 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { distribution } from '../distribution.js';
-const npm = { distribution: { type: 'npm', package: '@muneris/sts-cli' } };
-test('npm installation is pinned and never offers an executable download', () => {
-  const result = distribution(npm, { version: '0.4.0', url: 'https://example.invalid/obsolete.exe' });
-  assert.deepEqual(result.downloads, []);
+test('provider commands and link labels pass through without package-manager knowledge', () => {
+  const actions = [{ type: 'command', label: 'Get the tool', text: 'custom-manager fetch example@7' }, { type: 'link', label: 'Project page', url: 'https://example.invalid/project' }];
+  const result = distribution({}, { version: 'vendor-release-seven', actions });
+  assert.deepEqual(result.actions[0], actions[0]);
+  assert.equal(result.actions[1].label, actions[1].label);
+  assert.equal(result.actions[1].download, false);
   assert.equal(result.download, null);
-  assert.equal(result.installation.command, 'npm install --global @muneris/sts-cli@0.4.0');
-  assert.equal(result.installation.url, 'https://www.npmjs.com/package/@muneris/sts-cli');
 });
-test('existing executable tools retain their download URL and asset label', () => {
-  const result = distribution({ asset: 'example.exe' }, { version: '28', url: 'https://example.invalid/example.exe' });
-  assert.equal(result.installation, null);
-  assert.equal(result.downloads[0].sub, 'example.exe');
-  assert.equal(result.downloads[0].url, 'https://example.invalid/example.exe');
+test('legacy download feeds retain download behavior', () => {
+  const result = distribution({ asset: 'example.zip' }, { url: 'https://example.invalid/example.zip' });
+  assert.equal(result.actions[0].download, true);
+  assert.equal(result.actions[0].description, 'example.zip');
 });
-test('unreleased tools have no installation/download; malformed npm metadata fails closed', () => {
-  assert.equal(distribution(npm, null).installation, null);
-  assert.deepEqual(distribution({}, null).downloads, []);
-  assert.throws(() => distribution(npm, { version: '9; execute' }));
-  assert.throws(() => distribution({ distribution: { type: 'npm', package: 'bad;command' } }, null));
+test('unreleased/explicitly empty actions stay empty; invalid provider data fails closed', () => {
+  assert.deepEqual(distribution({}, null).actions, []);
+  assert.deepEqual(distribution({}, { url: 'https://example.invalid', actions: [] }).actions, []);
+  for (const action of [
+    { type: 'link', label: 'Unsafe', url: 'javascript:alert(1)' },
+    { type: 'link', label: 'Unsafe', url: 'https://secret@example.invalid/' },
+    { type: 'execute', label: 'Forbidden' },
+    { type: 'command', label: 'Empty', text: '' },
+  ]) assert.throws(() => distribution({}, { actions: [action] }));
 });
-test('npm UI uses text nodes and a normal npm link, not a download anchor', () => {
+test('renderer displays provider text safely rather than executing or interpreting commands', () => {
   const template = readFileSync(new URL('../template.html', import.meta.url), 'utf8');
-  const npmBranch = template.split("if(t.installation?.type==='npm'){")[1].split('} else if')[0];
-  assert.match(npmBranch, /command.textContent=t.installation.command/);
-  assert.match(npmBranch, /View on npm/);
-  assert.doesNotMatch(npmBranch, /innerHTML|\bdownload\b/);
+  assert.match(template, /command.textContent=action.text/);
+  assert.match(template, /link.textContent=action.label/);
+  assert.doesNotMatch(template, /Install with npm|View on npm|sts-cli|STS API/);
 });

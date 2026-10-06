@@ -413,18 +413,26 @@ function openTool(id){
 
   // download button (or coming-soon note) below the details
   const dlBox=document.getElementById('tp-download');
-  if(t.installation?.type==='npm'){
-    const heading=document.createElement('strong');
-    heading.textContent='Install with npm';
-    const command=document.createElement('pre');
-    command.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0';
-    command.textContent=t.installation.command;
-    const link=document.createElement('a');
-    link.className='dl-btn'; link.href=t.installation.url; link.textContent='View on npm';
-    dlBox.replaceChildren(heading,command,link);
-  } else if(t.downloads.length){
-    const d=t.downloads[0];
-    dlBox.innerHTML=`<a class="dl-btn" href="${d.url}" download><svg viewBox="0 0 24 24"><path d="M12 4v12M6 12l6 6 6-6M4 20h16"/></svg> Download</a><div class="dl-cap">${d.sub}</div>`;
+  dlBox.replaceChildren();
+  if(t.actions.length){
+    for(const action of t.actions){
+      if(action.type==='command'){
+        const heading=document.createElement('strong'); heading.textContent=action.label;
+        const command=document.createElement('pre');
+        command.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0';
+        command.textContent=action.text;
+        dlBox.append(heading,command);
+      } else {
+        const link=document.createElement('a');
+        link.className='dl-btn'; link.href=action.url; link.textContent=action.label;
+        if(action.download) link.setAttribute('download','');
+        dlBox.append(link);
+        if(action.description){
+          const description=document.createElement('div'); description.className='dl-cap';
+          description.textContent=action.description; dlBox.append(description);
+        }
+      }
+    }
   } else {
     dlBox.innerHTML='<div class="dl-none">Not yet available. <a href="mailto:support@muneris.dk">Request early access</a>.</div>';
   }
@@ -457,7 +465,7 @@ const AI_PROMPT = [
   'QUICK-START.md, CHANGELOG.md).',
   '',
   'Then help me pick the right tool for my task, tell me what it does, and show me how to get it and',
-  'use it. Run `<tool> --help` and follow its output contract; STS API response bytes are not wrapped in JSON.'
+  'use it. Follow the provider documentation and agent guidance for its commands and output contract.'
 ].join('\n');
 
 function copyAiPrompt(el){

@@ -105,8 +105,9 @@ function main() {
       id: slug, name: tj.name, icon: tj.icon,
       features: Array.isArray(tj.features) ? tj.features : [],
       description: tj.description,
+      agentGuidance: typeof tj.agentGuidance === 'string' ? tj.agentGuidance : '',
       order: tj.order ?? 999, status,
-      runtime: tj.runtime || '.NET', license: tj.license || 'Free',
+      runtime: tj.runtime || '—', license: tj.license || '—',
       version: rel ? rel.version : '—',
       updated: rel ? rel.date : '—',
       size: rel ? (rel.size || '—') : '—',
@@ -120,18 +121,18 @@ function main() {
   // It is an INDEX, not a copy: it lists the slugs and explains the per-tool file convention.
   // Everything it points at is a file the tool itself authors, so nothing here can drift, and
   // the site deliberately documents no command surface -- the tools describe themselves.
-  const url = (...p) => [SITE, ...p].join('/');
   const listed = tools.map(t =>
     `- **${t.id}** — ${t.name}: ${t.description}` +
-    (t.status === 'stable' ? ` (latest v${t.version}, ${t.updated})` : ' (not yet released)')).join('\n');
+    (t.status === 'stable' ? ` (catalog v${t.version}, ${t.updated})` : ' (not yet released)') +
+    (t.agentGuidance ? `\n  Provider guidance: ${t.agentGuidance}` : '')).join('\n');
 
   writeFileSync(join(OUT, 'llms.txt'),
 `# Muneris Tools
 
 > Tools for working with Oracle Simphony POS systems, including portable Windows
-> executables and cross-platform npm packages. Follow each tool's runtime and
-> installation instructions. STS API responses are raw, unchanged bytes on stdout;
-> local STS commands use JSON. Other tools define their own output contracts.
+> utilities with provider-owned documentation and installation instructions.
+> Providers define their own runtime, command surface, update discovery and output
+> contracts. This site renders those descriptions; it does not infer tool behavior.
 
 ## Tools
 
@@ -156,26 +157,24 @@ not hand-authored like the three files above:
 
     { "version": "…", "date": "…", "size": "…", "url": "…" }
 
-Read it to find a released version. For executable tools, \`url\` is the direct download.
-For tools whose \`tool.json\` declares \`distribution.type: "npm"\`, \`url\` is the npm
-package page and \`install\` is a version-pinned npm install command, not an executable.
-For STS update checks use npm's latest tag (\`sts version --check\` when supported);
-the catalog can lag while its documentation-update PR awaits review. **Absent (404) until a tool's first release** — that is
+Read the provider's \`actions\` array for display-ready installation instructions:
+\`{ type: "command", label, text }\` displays a command without executing it;
+\`{ type: "link", label, url, download? }\` supplies an HTTPS link. The provider
+chooses every label, command, version and URL. Legacy feeds with only \`url\` retain
+simple download behavior. Catalog updates may await review; use the provider's
+own update guidance rather than assuming the catalog version is always latest. **Absent (404) until a tool's first release** — that is
 how you tell "not released yet" from "no such tool" (whose \`tool.json\` would be missing too).
 
-Example: ${url('sts-cli', 'release.json')}
+The provider's documentation explains how to interpret its release metadata.
 
 ## Driving the tools
 
 Install using the tool's documented distribution (npm or executable), then let the
 tool describe itself. Documentation here is tied to the synchronized release:
 
-- \`<tool> --help\` is complete: inputs, a worked example, and the blast radius of each command.
-- Follow each tool's output contract. STS response bytes are unchanged on stdout;
-  STS local/feedback commands return JSON. Diagnostics go to stderr.
-- Exit codes are a documented taxonomy, so failures are branchable without parsing text.
-- STS has \`sts endpoints\` (every call it can make). For update discovery use
-  \`npm view @muneris/sts-cli version\`, or \`sts version --check\` in versions that support it.
+- Consult provider documentation for supported interfaces, inputs and operation side effects.
+- Follow each provider's documented output contract and exit codes.
+- Do not assume a particular package manager, platform, executable format or update command.
 `);
 
   const template = readFileSync(join(ROOT, 'template.html'), 'utf8');
