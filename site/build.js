@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, existsSync, mkdirSync, writeFileSync, rmSync
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
+import { distribution } from './distribution.js';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));   // .../site
 const TOOLS_DIR = join(ROOT, 'tools');
@@ -28,7 +29,7 @@ function parseDoc(raw) {
 //  - "## v28 — 2026-07-14" changelog headers → version on top, small muted date below
 //  - "- add:/fix:/chg: …" list items → coloured change chips
 const decorate = html => html
-  .replace(/<h2>(v\d+)\s*—\s*(\d{4}-\d{2}-\d{2})<\/h2>/gi,
+  .replace(/<h2>(v?\d+(?:\.\d+\.\d+)?)\s*[-—]\s*(\d{4}-\d{2}-\d{2})<\/h2>/gi,
     '<div class="cl-h"><span class="cl-v">$1</span><span class="cl-d">$2</span></div>')
   .replace(/<li>(add|fix|chg):\s*/gi,
     (_, t) => `<li><span class="chip ${t.toLowerCase()}">${t.toLowerCase()}</span> `);
@@ -109,10 +110,9 @@ function main() {
       version: rel ? rel.version : '—',
       updated: rel ? rel.date : '—',
       size: rel ? (rel.size || '—') : '—',
-      downloads: rel && rel.url ? [{ t: 'Windows — portable .exe', sub: tj.asset || 'download', url: rel.url }] : [],
+      ...distribution(tj, rel),
       pages,
       docs: mdFiles,                        // agent-facing only; stripped before the SPA payload
-      download: rel && rel.url ? rel.url : null,
     };
   }).sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 
@@ -128,9 +128,10 @@ function main() {
   writeFileSync(join(OUT, 'llms.txt'),
 `# Muneris Tools
 
-> Small, self-contained Windows tools for working with Oracle Simphony POS systems. Each is a
-> single .exe with no installer. The command-line tools are agent-first: one JSON envelope on
-> stdout, diagnostics on stderr, a complete \`--help\`, and documented exit codes.
+> Tools for working with Oracle Simphony POS systems, including portable Windows
+> executables and cross-platform npm packages. Follow each tool's runtime and
+> installation instructions. STS API responses are raw, unchanged bytes on stdout;
+> local STS commands use JSON. Other tools define their own output contracts.
 
 ## Tools
 
@@ -155,19 +156,23 @@ not hand-authored like the three files above:
 
     { "version": "…", "date": "…", "size": "…", "url": "…" }
 
-Read it to download a tool or check for updates: compare \`version\` with the build the user is
-running; \`url\` is the direct download. **Absent (404) until a tool's first release** — that is
+Read it to find a released version. For executable tools, \`url\` is the direct download.
+For tools whose \`tool.json\` declares \`distribution.type: "npm"\`, \`url\` is the npm
+package page and \`install\` is a version-pinned npm install command, not an executable.
+For STS update checks use npm's latest tag (\`sts version --check\` when supported);
+the catalog can lag while its documentation-update PR awaits review. **Absent (404) until a tool's first release** — that is
 how you tell "not released yet" from "no such tool" (whose \`tool.json\` would be missing too).
 
 Example: ${url('sts-cli', 'release.json')}
 
 ## Driving the tools
 
-Download the \`.exe\` from \`release.json\`'s \`url\`, then let the tool describe itself — this
-site documents no command surface on purpose, so it cannot go stale:
+Install using the tool's documented distribution (npm or executable), then let the
+tool describe itself. Documentation here is tied to the synchronized release:
 
 - \`<tool> --help\` is complete: inputs, a worked example, and the blast radius of each command.
-- Results are a stable JSON envelope on stdout; human/diagnostic logs go to stderr.
+- Follow each tool's output contract. STS response bytes are unchanged on stdout;
+  STS local/feedback commands return JSON. Diagnostics go to stderr.
 - Exit codes are a documented taxonomy, so failures are branchable without parsing text.
 - StsCLI additionally has \`sts endpoints\` (every call it can make) and \`sts version --check\`.
 `);

@@ -244,7 +244,7 @@
   <header class="hero">
     <div class="wrap hero-inner">
       <h1>Small tools that make POS work a little <em>easier</em>.</h1>
-      <p class="lede">We make these Windows utilities to simplify our own work on hospitality point-of-sale, and we share them with our customers. Some are small, some a bit larger; they come with no strings attached and no warranty — but we always welcome your feedback.</p>
+      <p class="lede">We make these utilities to simplify our own work on hospitality point-of-sale, and we share them with our customers. Some are small, some a bit larger; they come with no strings attached and no warranty — but we always welcome your feedback.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" onclick="document.getElementById('tools').scrollIntoView()">Browse tools</a>
         <a class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView()">Get in touch</a>
@@ -260,7 +260,7 @@
       <div class="sec-head">
         <div class="sec-label">Tools</div>
         <h2>Tools &amp; utilities</h2>
-        <p>Each tool is a single self-contained <code>.exe</code> — no installation required. Several are built with, and can be driven by, AI coding agents like Claude Code, Codex, or Gemini CLI.</p>
+        <p>Tools are distributed as portable Windows executables or cross-platform npm packages. Check each tool's runtime and installation instructions. Several are built with, and can be driven by, AI coding agents like Claude Code, Codex, or Gemini CLI.</p>
       </div>
       <div class="tools" id="tools-grid"></div>
     </div>
@@ -413,7 +413,16 @@ function openTool(id){
 
   // download button (or coming-soon note) below the details
   const dlBox=document.getElementById('tp-download');
-  if(t.downloads.length){
+  if(t.installation?.type==='npm'){
+    const heading=document.createElement('strong');
+    heading.textContent='Install with npm';
+    const command=document.createElement('pre');
+    command.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0';
+    command.textContent=t.installation.command;
+    const link=document.createElement('a');
+    link.className='dl-btn'; link.href=t.installation.url; link.textContent='View on npm';
+    dlBox.replaceChildren(heading,command,link);
+  } else if(t.downloads.length){
     const d=t.downloads[0];
     dlBox.innerHTML=`<a class="dl-btn" href="${d.url}" download><svg viewBox="0 0 24 24"><path d="M12 4v12M6 12l6 6 6-6M4 20h16"/></svg> Download</a><div class="dl-cap">${d.sub}</div>`;
   } else {
@@ -441,14 +450,14 @@ function showHome(){
    Seeds an agent with the entry point only; llms.txt teaches it the rest, so this text
    never has to list tools or versions and cannot go stale. */
 const AI_PROMPT = [
-  'Muneris publishes small, self-contained Windows tools for working with Oracle Simphony POS systems.',
+  'Muneris publishes Windows utilities and cross-platform npm tools for Oracle Simphony POS systems.',
   '',
   'Start by reading https://tools.muneris.cloud/llms.txt — it lists every tool and explains the files',
-  'each one publishes (release.json for the latest build and its download URL, tool.json, README.md,',
+  'each one publishes (release.json for its synchronized release, tool.json for distribution/runtime, README.md,',
   'QUICK-START.md, CHANGELOG.md).',
   '',
   'Then help me pick the right tool for my task, tell me what it does, and show me how to get it and',
-  'use it. The command-line tools are agent-first: run `<tool> --help`, and results come back as JSON.'
+  'use it. Run `<tool> --help` and follow its output contract; STS API response bytes are not wrapped in JSON.'
 ].join('\n');
 
 function copyAiPrompt(el){

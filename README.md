@@ -1,8 +1,9 @@
 # Muneris Tools
 
-Public documentation, release binaries, and the generated catalog site for Muneris's small,
-self-contained Windows utilities. Each tool's **source code is private** — only its docs and
-releases live here.
+Public documentation and the generated catalog site for Muneris utilities, including
+portable Windows executables and cross-platform npm packages. Some tools have private
+source repositories; STS CLI is public at https://github.com/mbundgaard/sts-cli.
+STS is installed from npm, not from an executable hosted here.
 
 **Live site:** https://tools.muneris.cloud/
 
@@ -67,7 +68,10 @@ the release pipeline flips that over automatically when it publishes a build.
 - **`description`** — a single line, reused on the card and the page header (there is only one).
 - **`order`** — card sort order, ascending; ties break alphabetically.
 - **`asset`** — the release asset's filename, shown under the Download button.
-- Do **not** put version, date or download info here — the release pipeline supplies those.
+- **`distribution`** (optional) - `{ "type": "npm", "package": "@muneris/sts-cli" }`
+  selects npm installation instead of an executable download. Omit for existing
+  portable Windows tools. npm entries need a stable SemVer release, e.g. `0.4.0`.
+- Do **not** put version, date or download info here - the release pipeline supplies those.
 
 ### Markdown pages — one tab per `.md`
 
@@ -122,7 +126,42 @@ Pick a **slug** — lowercase-kebab (`ip-printer`, `sim-cli`). It must be identi
 
 Then choose how the folder is produced:
 
-### A. Tool with its own private source repo (the normal path)
+### STS CLI: public npm source and reviewed release synchronization
+
+STS is the exception to the legacy `tool/` mirroring below. Its source repository owns
+`catalog/tool.json`, existing README/guides/changelog and explicitly listed screenshots.
+The exporter generates the normal tool-folder contract; do not hand-maintain a second
+copy of STS documentation here.
+
+`.github/workflows/sync-sts.yml` runs hourly or manually. It reads npm stable `latest`,
+requires a matching published GitHub release, checks out `v<version>` (never main),
+and exports into a staging directory. It checks npm `gitHead` when available, records
+the resolved source commit, and refuses downgrades or moved previously recorded tags.
+It replaces only `site/tools/sts-cli/` and opens/updates `automation/sts-catalog` as a
+reviewed PR. Review and merge to trigger the existing Pages deployment.
+
+Enable **Settings > Actions > General > Workflow permissions > Allow GitHub Actions
+to create and approve pull requests**. No PAT/new secret is required; this workflow
+uses this repository's `GITHUB_TOKEN`. The checkbox permits creation; this workflow
+does not approve or merge its own PR. Scheduled workflows can be delayed or disabled
+by GitHub after inactivity; use **Sync published STS catalog > Run workflow** as needed.
+
+Version `0.3.0` predates export support and is skipped without changing the catalog.
+The first new release containing the exporter will replace the old .NET STS content.
+Do not label current unreleased source as `0.3.0` just to update the site early.
+
+For npm entries `release.json.url` is the npm page, `install` is a pinned install
+command, and `sourceCommit`/`source` identify the release source. The UI shows
+**Install with npm** and **View on npm**, not a download anchor. No `.exe` asset or
+size is required. Catalog versions can lag pending review; STS checks npm for updates.
+Existing executable tools retain their download behavior and legacy release feeds.
+
+Only allowlisted Markdown/metadata and explicitly listed reviewed image files are
+exported. Unlisted images, private references, token state, logs, and old STS site
+files/screenshots are not carried forward. Changes to the export list require review
+in the STS repository; review image pixels and metadata before making anything public.
+
+### A. Tool with its own private source repo (legacy executable path)
 
 Keep the tool's public docs in a top-level **`tool/`** folder in that repo (`tool.json`, `README.md`,
 `CHANGELOG.md`, optional `QUICK-START.md` and `screenshots/`). Copy the release wiring from
@@ -159,8 +198,8 @@ one, add its SVG under a new key to the `ICONS` map in **`site/template.html`**.
 
 ## Releases & auto-update
 
-*Release plumbing — not part of the tool-folder contract above. Skip this unless you are wiring up
-a pipeline or publishing a build by hand.*
+*The following describes legacy executable tools. For STS npm distribution, use the
+reviewed synchronization described above instead.*
 
 - One GitHub release per build, tagged **`<slug>/v<n>`** (e.g. `ip-printer/v28`), with the binary
   attached under a **stable filename** so users' shortcuts survive updates.
@@ -187,5 +226,6 @@ a pipeline or publishing a build by hand.*
 ```bash
 cd site
 npm ci
+npm test
 node build.js        # writes site/_site/  — open site/_site/index.html
 ```

@@ -1,0 +1,47 @@
+name: Sync published STS catalog
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: sync-sts-catalog
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch published release and export public content
+        run: node scripts/sync-sts-catalog.mjs
+      - name: Test distribution handling and build site
+        working-directory: site
+        run: |
+          npm ci
+          node --test tests/*.test.mjs
+          npm run build
+      - name: Open or update reviewed catalog PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          branch: automation/sts-catalog
+          delete-branch: true
+          add-paths: site/tools/sts-cli
+          commit-message: 'docs: sync published STS npm release'
+          title: 'docs: sync published STS npm release'
+          body: |
+            Generated from npm latest and its matching published GitHub release tag,
+            never from STS main. The release commit is recorded in release.json.
+            Only allowlisted documentation, catalog metadata and explicitly reviewed
+            screenshots are exported. No credentials or private references are copied.
+
+            Review the version, installation command, docs and any screenshots.
+            Merging this PR publishes the update through the existing Pages workflow.
