@@ -137,4 +137,4 @@ Back up state using protected filesystem or secret-storage tools. There is no co
 - **TLS errors:** certificate verification is enabled by default. Repair the certificate/trusted CA first. For a trusted HTTPS STS endpoint, the explicit per-call `--insecure` option is available only after the agent obtains the user's confirmation for that endpoint; optionally combine it with `--sts-url <url>`. Do not automatically add it after a connection failure. Known Oracle cloud domains and the configured IDM host cannot use this bypass. Auth login/refresh always verify HTTPS certificates.
 - **State errors:** verify directory permissions, file validity and stale locks; see exit `12` diagnostics.
 
-See [the command reference](https://github.com/mbundgaard/sts-cli/blob/01d47ac638acbdd44d3bb27d6ccf4b15e78c5d55/docs/CLI.md) for location-specific operations and the raw-response output contract.
+See [the command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) for location-specific operations and the raw-response output contract.
