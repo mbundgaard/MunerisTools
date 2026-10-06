@@ -174,7 +174,8 @@ tool describe itself. Documentation here is tied to the synchronized release:
 - Follow each tool's output contract. STS response bytes are unchanged on stdout;
   STS local/feedback commands return JSON. Diagnostics go to stderr.
 - Exit codes are a documented taxonomy, so failures are branchable without parsing text.
-- StsCLI additionally has \`sts endpoints\` (every call it can make) and \`sts version --check\`.
+- STS has \`sts endpoints\` (every call it can make). For update discovery use
+  \`npm view @muneris/sts-cli version\`, or \`sts version --check\` in versions that support it.
 `);
 
   const template = readFileSync(join(ROOT, 'template.html'), 'utf8');

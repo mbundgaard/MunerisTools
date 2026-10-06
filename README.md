@@ -147,8 +147,12 @@ does not approve or merge its own PR. Scheduled workflows can be delayed or disa
 by GitHub after inactivity; use **Sync published STS catalog > Run workflow** as needed.
 
 Version `0.3.0` predates export support and is skipped without changing the catalog.
-The first new release containing the exporter will replace the old .NET STS content.
-Do not label current unreleased source as `0.3.0` just to update the site early.
+The catalog was bootstrapped from its verified release commit
+`1d8a9abfbdadcc9b8df1e6aaab93871b7fcc9ee8`, using the allowlisted exporter and
+catalog frame introduced in STS commit `7c4817ac8e6061219fdd3e193ddf114e79c076d2`.
+Its documentation comes from the published tag, not unreleased main. The old .NET
+STS catalog content has been replaced; historical executable releases remain available
+on GitHub. The next release containing the exporter resumes normal synchronization.
 
 For npm entries `release.json.url` is the npm page, `install` is a pinned install
 command, and `sourceCommit`/`source` identify the release source. The UI shows
