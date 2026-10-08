@@ -12,18 +12,18 @@ order: 1
 Authentication. Explicit requests. Unchanged responses.
 
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/LICENSE)
 
-[Getting started](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/README.md#getting-started) · [Command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) · [Authentication](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md) · [Oracle API reference](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/) · [Contributing](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CONTRIBUTING.md)
+[Getting started](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/README.md#getting-started) · [Command reference](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/CLI.md) · [Authentication](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/AUTHENTICATION.md) · [Oracle API reference](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/) · [Contributing](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/CONTRIBUTING.md)
 
 </div>
 
 `sts` is a small, cross-platform TypeScript CLI for **Oracle Simphony Transaction Services Gen2**. Designed for people, scripts, and AI agents, it handles authentication and builds explicit API requests - without hiding what Simphony returns.
 
 - **One command, every platform.** Windows, macOS, and Linux. Node.js 22+.
-- **Persistent authentication.** Oracle PKCE login, explicit refresh, and saved token rotation.
+- **Persistent authentication.** Separate company profiles, Oracle PKCE login, scheduled renewal and saved token rotation.
 - **Discoverable requests.** Noun–verb commands, structured JSON, editable examples, and network-free previews.
-- **Raw API output.** Response bodies go to stdout unchanged. Diagnostics go to stderr.
+- **Verbatim API data.** Small bodies go to stdout unchanged. Above **16 KiB or 500 lines**, the full body is saved privately and stdout returns a compact file reference. Automatic, with no mode flags. Diagnostics go to stderr.
 - **No surprise retries.** Writes are explicit; duplicate detection requires a stable idempotency ID.
 
 ## Getting started
@@ -63,7 +63,14 @@ An unavailable check is reported as such, not as up to date, and remains advisor
 
 Agents should check once at session start, not on every STS call, and ask before
 updating. Respect the user's installation method; the suggested npm command is for
-global installs. No automatic update checks are added to normal STS calls.
+global installs.
+
+After successful STS API calls, the CLI also checks for updates at most once per
+24 hours and prints a short **stderr** notice if a newer version exists. These
+checks have a 1-second network timeout, stay silent on failure, and never change
+the API response or exit code. `--quiet` skips them. Help, local commands and
+dry-runs never check automatically. Nothing installs automatically. This automatic
+notice is available starting with 0.5.0; older installations still need the explicit check.
 
 ### Configure and authenticate
 
@@ -92,7 +99,7 @@ password is used for login only and is not saved by the CLI. Do not assume it is
 expired, one-time, or requires changing unless Oracle explicitly reports that;
 a 401 alone is insufficient. Refresh uses the saved refresh token, not the password.
 You can rotate the password afterward in Oracle. Never echo the password or include it in feedback. Argument values may be visible in shell history/process
-listings; see [authentication options](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md).
+listings; see [authentication options](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/AUTHENTICATION.md).
 
 Nothing ships preconfigured. Passwords are never saved. Configuration, tokens and
 feedback state live outside the npm installation, so upgrades do not remove them:
@@ -108,10 +115,17 @@ option. Start a new session with `sts auth status` and reuse saved tokens rather
 repeating setup/login. Different OS users or machines do not automatically share state.
 
 ```sh
-sts auth refresh   # explicitly refresh and save rotated tokens
+sts company list
+sts company select "<companyCode>@<authHostname>"
+sts company delete "<companyCode>@<authHostname>"  # local profile/tokens only
+sts auth refresh   # explicitly renew all unexpired profiles now
 ```
 
-See [authentication and state](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md) for secure shell examples, custom environments, state locations, and importing an existing installation.
+Successful login always saves and selects its company. Keys combine the derived company code and lowercase auth hostname; selection/deletion require the exact key. Deleting the active profile clears selection without choosing another. Existing single-company state migrates safely.
+
+Before STS API calls, all due profiles are renewed: success schedules the next check for 24 hours later, failure for one hour later while retaining still-valid tokens. Expired token sets are removed, not refreshed; login is then required. There is no daemon or STS retry. Help, local commands and dry-runs stay offline. Configuration prepares the next login without altering saved profiles, and duplicate same-user logins report existing tokens instead of authenticating again.
+
+See [authentication and state](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/AUTHENTICATION.md) for scheduling, company selection, custom environments, secure state storage and importing an existing installation.
 
 ### Read a property
 
@@ -167,7 +181,7 @@ Use **one UUID per logical write**, reusing it only when retrying that same writ
 
 A timeout does not prove a write failed. The CLI never retries writes or follows redirects automatically. Reconcile uncertain outcomes before trying again.
 
-See the [command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) for filtering checks, charged tips, pickup/autofire time, and the first-user pilot checklist. Pickup requests use **property-local wall time**, while responses use UTC; the CLI does not convert timezones. Use the property's timezone and configured lead time.
+See the [command reference](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/CLI.md) for filtering checks, charged tips, pickup/autofire time, and the first-user pilot checklist. Pickup requests use **property-local wall time**, while responses use UTC; the CLI does not convert timezones. Use the property's timezone and configured lead time.
 
 ## Choose the STS endpoint per call
 
@@ -185,7 +199,7 @@ For a trusted HTTPS STS host with a self-signed certificate, explicitly opt in:
 sts check list --location <loc> --rvc <rvc> --sts-url https://pos.example:5443 --insecure
 ```
 
-`--insecure` disables certificate validation for that call only. **Agents must get explicit user confirmation for the endpoint before using it.** Fix certificate/CA configuration first; never automatically retry with `--insecure`. The CLI remains noninteractive and does not prompt itself. Certificate-validation failures include this guidance on stderr when bypass is permitted; DNS errors, refused connections, timeouts, and other failures do not suggest it. It is refused for known Oracle cloud domains and the configured IDM hostname, and is unavailable on auth login/refresh. Without it, TLS is verified. Only override to a trusted endpoint: your saved Bearer token is sent to the selected URL. Neither option changes state; `sts auth config --sts-url <url>` is the separate command for saving a new default.
+`--insecure` disables certificate validation for that call only. **Agents must get explicit user confirmation for the endpoint before using it.** Fix certificate/CA configuration first; never automatically retry with `--insecure`. The CLI remains noninteractive and does not prompt itself. Certificate-validation failures include this guidance on stderr when bypass is permitted; DNS errors, refused connections, timeouts, and other failures do not suggest it. It is refused for known Oracle cloud domains and the configured IDM hostname, and is unavailable on auth login/refresh. Without it, TLS is verified. Only override to a trusted endpoint: your saved Bearer token is sent to the selected URL. Neither option changes state; `sts auth config --sts-url <url>` prepares a new default for the next successful login; it does not immediately change the active profile.
 
 **Breaking change in 0.3.0:** `--local-sts-ip` is removed, not an alias.
 
@@ -230,7 +244,7 @@ not a server row.
 The default service is `https://feedback.muneris.cloud/`. Override with
 `sts feedback config --url <base-url>` or per-call `--url` (which takes precedence). HTTPS is required except HTTP loopback for development;
 there is no TLS bypass or authentication. `sts feedback health` tests liveness,
-not storage. See the [feedback reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md#feedback) for details.
+not storage. See the [feedback reference](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/CLI.md#feedback) for details.
 
 ## The output contract
 
@@ -242,20 +256,22 @@ sts check get <checkRef> --location <loc> --rvc <rvc> --quiet > response.json
 
 | Outcome | stdout | stderr | Exit |
 |---|---|---|---|
-| STS HTTP 2xx | Original response body | HTTP status, unless quiet | `0` |
-| STS HTTP 401 | Original error body | HTTP status, unless quiet | `9` |
-| Other STS non-2xx | Original error body | HTTP status, unless quiet | `11` |
+| STS HTTP 2xx | Original body or large-body file receipt | HTTP status, unless quiet | `0` |
+| STS HTTP 401 | Original error body or file receipt | HTTP status, unless quiet | `9` |
+| Other STS non-2xx | Original error body or file receipt | HTTP status, unless quiet | `11` |
 | Network/input/state failure | Empty | Error | Nonzero |
 | Auth, configuration, status, version, endpoints, dry-run | Local JSON result | Diagnostics/errors | Outcome-dependent |
 | Feedback commands | Local JSON status, preview or confirmation | Progress/errors | Outcome-dependent |
 | `check example` | Editable JSON body | Errors only | `0` or `6` |
 | Help/version flag | Human-readable text | Parse errors, if any | `0` or `6` |
 
-Authentication responses necessarily undergo internal parsing to persist tokens; full tokens are not emitted by auth commands. HTTP compression is decoded, and framing is removed. STS bodies are buffered before output so a broken connection does not produce an apparently complete partial response.
+Authentication responses necessarily undergo internal parsing to persist tokens; full tokens are not emitted by auth commands. HTTP compression is decoded, and framing is removed. STS bodies above 16,384 bytes or 500 lines stream to protected files; only a completed response gets a receipt. Smaller bodies remain exact stdout bytes. No response JSON is interpreted.
+
+**Scripts must handle both delivery forms.** Redirection can capture a file receipt, not the original API body. Use its absolute `path` or local `uri` to filter/read selected data without loading everything into agent context. Files remain until deleted. Storage failures exit 1; a failed save does not undo a POS write and must not trigger an automatic retry. See [response delivery](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/RESPONSES.md).
 
 **HTTP success is not business validation.** A dropped tip, cached result, or unexpected POS behavior is for the caller to inspect. The CLI does not interpret it. A tender may ignore a charged tip and return change instead: inspect returned tenders, tips, change and totals before claiming success.
 
-Request-body numbers retain their precision, including large integers and precise decimals, in sent requests and dry-run previews. If rotated-token persistence fails after a complete synced replacement was written, a private recovery copy is retained with recovery instructions; do not blindly refresh again. See [authentication recovery](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md#recovering-a-failed-state-replacement).
+Request-body numbers retain their precision, including large integers and precise decimals, in sent requests and dry-run previews. If rotated-token persistence fails after a complete synced replacement was written, a private recovery copy is retained with recovery instructions; do not blindly refresh again. See [authentication recovery](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/AUTHENTICATION.md#recovering-a-failed-state-replacement).
 
 Exit codes: `0` success · `1` unexpected failure · `6` usage · `7` not configured · `8` no tokens · `9` auth failure · `10` network failure · `11` API non-success · `12` state/lock failure.
 
@@ -263,10 +279,11 @@ Exit codes: `0` success · `1` unexpected failure · `6` usage · `7` not config
 
 | Guide | Contents |
 |---|---|
-| [Command reference](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/CLI.md) | Filters, requests, examples, endpoint overrides, TLS, limitations |
-| [Authentication and state](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/AUTHENTICATION.md) | Login, refresh, configuration, storage, restore, troubleshooting |
-| [Development](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/docs/DEVELOPMENT.md) | Architecture, tests, package validation, release process |
-| [Changelog](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CHANGELOG.md) | Changes and release status |
+| [Command reference](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/CLI.md) | Filters, requests, examples, endpoint overrides, TLS, limitations |
+| [Authentication and state](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/AUTHENTICATION.md) | Login, refresh, configuration, storage, restore, troubleshooting |
+| [Response delivery](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/RESPONSES.md) | Automatic inline/file thresholds, agent handling, privacy and failures |
+| [Development](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/docs/DEVELOPMENT.md) | Architecture, tests, package validation, release process |
+| [Changelog](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/CHANGELOG.md) | Changes and release status |
 
 Primary API reference: [Oracle STS Gen2 API Guide](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/) ([Swagger](https://docs.oracle.com/en/industries/food-beverage/simphony/omsstsg2api/swagger.json)).
 
@@ -275,16 +292,16 @@ Primary API reference: [Oracle STS Gen2 API Guide](https://docs.oracle.com/en/in
 For direct help, email [support@muneris.dk](mailto:support@muneris.dk).
 Include the CLI version and a short, sanitized description of the problem.
 **Never send passwords, access/refresh tokens, or unreviewed customer data or API dumps.**
-For sensitive security issues, follow [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/SECURITY.md) rather than ordinary feedback.
+For sensitive security issues, follow [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/SECURITY.md) rather than ordinary feedback.
 
 ## Contributing
 
-Bug reports, documentation improvements, and focused pull requests are welcome. Start with [CONTRIBUTING.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CONTRIBUTING.md). Report vulnerabilities privately using [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/SECURITY.md), not public issues. Participation follows our [Code of Conduct](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/CODE_OF_CONDUCT.md).
+Bug reports, documentation improvements, and focused pull requests are welcome. Start with [CONTRIBUTING.md](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/CONTRIBUTING.md). Report vulnerabilities privately using [SECURITY.md](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/SECURITY.md), not public issues. Participation follows our [Code of Conduct](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/CODE_OF_CONDUCT.md).
 
 Please keep real credentials, customer records, and unreviewed API responses out of issues and pull requests.
 
 ## License
 
-[MIT](https://github.com/mbundgaard/sts-cli/blob/8da7d6c6a3d4bddcf92c871f781d04d0855c14d7/LICENSE) © 2026 Muneris.
+[MIT](https://github.com/mbundgaard/sts-cli/blob/f29396bbc23ab79401034e86465e750e355a019c/LICENSE) © 2026 Muneris.
 
 This project is independently maintained and is not an official Oracle product. Oracle and Simphony are trademarks of their respective owners.
